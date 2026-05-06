@@ -1,0 +1,2194 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python O'rganish — O'zbekcha</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #21262d;
+    --border: #30363d;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --yellow: #d29922;
+    --orange: #f0883e;
+    --red: #f85149;
+    --purple: #a371f7;
+    --teal: #39d353;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Nunito', sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: var(--sans); line-height: 1.6; }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(13,17,23,0.97);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex; align-items: center; gap: 0.25rem;
+    height: 56px; overflow-x: auto;
+    scrollbar-width: none;
+  }
+  nav::-webkit-scrollbar { display: none; }
+  nav a {
+    color: var(--muted); text-decoration: none; font-size: 12.5px; font-weight: 700;
+    padding: 5px 11px; border-radius: 6px; white-space: nowrap;
+    transition: all 0.18s;
+  }
+  nav a:hover { background: var(--surface2); color: var(--text); }
+  nav a.active { background: rgba(88,166,255,0.15); color: var(--accent); }
+  .nav-logo { color: var(--accent); font-weight: 900; font-size: 17px; margin-right: 0.75rem; white-space: nowrap; flex-shrink:0; }
+
+  /* ── HERO ── */
+  .hero {
+    background: linear-gradient(135deg, #0d1117 0%, #0e1a2b 50%, #0d1117 100%);
+    padding: 5rem 2rem 4rem;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(88,166,255,0.13) 0%, transparent 70%);
+  }
+  .hero-badge {
+    display: inline-block;
+    background: rgba(88,166,255,0.1); border: 1px solid rgba(88,166,255,0.3);
+    color: var(--accent); font-size: 13px; font-weight: 700;
+    padding: 4px 14px; border-radius: 20px; margin-bottom: 1.5rem;
+  }
+  .hero h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 900; line-height: 1.2; margin-bottom: 1rem; }
+  .hero h1 span { color: var(--accent); }
+  .hero p { color: var(--muted); font-size: 1.1rem; max-width: 600px; margin: 0 auto 2rem; }
+  .hero-stats { display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; }
+  .stat { text-align: center; }
+  .stat-num { font-size: 2rem; font-weight: 900; color: var(--accent); }
+  .stat-label { font-size: 13px; color: var(--muted); }
+
+  /* ── SECTION HEADER (big separator) ── */
+  .section-sep {
+    border-top: 2px solid var(--border);
+    margin: 0;
+    padding: 0;
+  }
+  .section-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1.6rem 2rem 1.4rem;
+    display: flex; align-items: center; gap: 1rem;
+    position: relative;
+  }
+  .section-header::before {
+    content: '';
+    position: absolute; left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: var(--accent);
+    border-radius: 0 4px 4px 0;
+  }
+  .section-header.green::before { background: var(--green); }
+  .section-header.yellow::before { background: var(--yellow); }
+  .section-header.orange::before { background: var(--orange); }
+  .section-header.purple::before { background: var(--purple); }
+  .section-header.red::before { background: var(--red); }
+  .section-header.teal::before { background: var(--teal); }
+
+  .sh-icon { font-size: 2rem; line-height:1; }
+  .sh-text { flex: 1; }
+  .sh-text h2 { font-size: 1.5rem; font-weight: 900; margin-bottom: 2px; }
+  .sh-text p { color: var(--muted); font-size: 0.875rem; }
+  .sh-num {
+    font-family: var(--mono); font-size: 3rem; font-weight: 700;
+    color: var(--border); line-height: 1; user-select: none;
+  }
+
+  /* ── CONTAINER ── */
+  .container { max-width: 1100px; margin: 0 auto; padding: 2.5rem 1.5rem; }
+
+  /* ── CARDS ── */
+  .grid { display: grid; gap: 1rem; }
+  .grid-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+  .grid-3 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+  .grid-4 { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; }
+  .card p { font-size: 0.875rem; color: var(--muted); line-height: 1.5; }
+  .card-accent { border-left: 3px solid var(--accent); }
+  .card-green { border-left: 3px solid var(--green); }
+  .card-yellow { border-left: 3px solid var(--yellow); }
+  .card-orange { border-left: 3px solid var(--orange); }
+  .card-purple { border-left: 3px solid var(--purple); }
+  .card-red { border-left: 3px solid var(--red); }
+  .card-teal { border-left: 3px solid var(--teal); }
+
+  /* ── CODE BLOCKS ── */
+  .code-block {
+    background: #010409;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 0.75rem 0;
+  }
+  .code-header {
+    background: var(--surface2);
+    padding: 8px 16px;
+    font-size: 12px; color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .code-body { padding: 1rem 1.25rem; overflow-x: auto; }
+  pre { font-family: var(--mono); font-size: 13px; line-height: 1.75; }
+  .kw { color: #ff7b72; }
+  .fn { color: #d2a8ff; }
+  .str { color: #a5d6ff; }
+  .num { color: #f2cc60; }
+  .cm { color: #8b949e; font-style: italic; }
+  .op { color: #ff7b72; }
+  .cls { color: #ffa657; }
+  .var { color: #e6edf3; }
+  .bi { color: #79c0ff; }
+  .dec { color: #ffa657; }
+
+  /* ── BADGES ── */
+  .badge {
+    display: inline-block; font-size: 11px; font-weight: 700;
+    padding: 2px 8px; border-radius: 12px;
+  }
+  .badge-blue { background: rgba(88,166,255,0.15); color: var(--accent); }
+  .badge-green { background: rgba(63,185,80,0.15); color: var(--green); }
+  .badge-yellow { background: rgba(210,153,34,0.15); color: var(--yellow); }
+  .badge-red { background: rgba(248,81,73,0.15); color: var(--red); }
+  .badge-purple { background: rgba(163,113,247,0.15); color: var(--purple); }
+  .badge-orange { background: rgba(240,136,62,0.15); color: var(--orange); }
+
+  /* ── INFO BOXES ── */
+  .info-box {
+    background: rgba(88,166,255,0.08);
+    border: 1px solid rgba(88,166,255,0.25);
+    border-radius: 10px; padding: 1rem 1.25rem;
+    margin: 1rem 0;
+  }
+  .info-box.warn { background: rgba(210,153,34,0.08); border-color: rgba(210,153,34,0.25); }
+  .info-box.success { background: rgba(63,185,80,0.08); border-color: rgba(63,185,80,0.25); }
+  .info-box.purple { background: rgba(163,113,247,0.08); border-color: rgba(163,113,247,0.25); }
+  .info-box h4 { font-size: 14px; font-weight: 700; margin-bottom: 5px; color: var(--accent); }
+  .info-box.warn h4 { color: var(--yellow); }
+  .info-box.success h4 { color: var(--green); }
+  .info-box.purple h4 { color: var(--purple); }
+  .info-box p, .info-box ul, .info-box ol { font-size: 14px; color: var(--muted); }
+  .info-box ul, .info-box ol { padding-left: 1.25rem; margin-top: 4px; }
+  .info-box li { margin-bottom: 3px; }
+
+  /* ── TABLE ── */
+  .tbl-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { background: var(--surface2); color: var(--muted); text-align: left; padding: 10px 14px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+  td { padding: 10px 14px; border-bottom: 1px solid var(--border); }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--surface2); }
+
+  /* ── STEPS ── */
+  .steps { display: flex; flex-direction: column; gap: 0; }
+  .step { display: flex; gap: 1rem; padding: 1rem 0; border-left: 2px solid var(--border); margin-left: 1rem; padding-left: 1.5rem; position: relative; }
+  .step::before {
+    content: attr(data-n);
+    position: absolute; left: -14px; top: 1rem;
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--accent); color: #fff;
+    font-size: 12px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .step-content h4 { font-weight: 700; margin-bottom: 4px; }
+  .step-content p { font-size: 14px; color: var(--muted); }
+
+  /* ── SUBSECTION TITLE ── */
+  .sub-title {
+    font-size: 1.1rem; font-weight: 800; color: var(--accent);
+    margin: 1.75rem 0 0.75rem;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .sub-title::after {
+    content: '';
+    flex: 1; height: 1px;
+    background: linear-gradient(to right, var(--border), transparent);
+  }
+  .sub-title.green { color: var(--green); }
+  .sub-title.yellow { color: var(--yellow); }
+  .sub-title.purple { color: var(--purple); }
+  .sub-title.orange { color: var(--orange); }
+
+  /* ── INLINE CODE ── */
+  code {
+    background: var(--surface2); padding: 2px 6px;
+    border-radius: 4px; font-family: var(--mono); font-size: 13px;
+    color: var(--orange);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--surface); border-top: 1px solid var(--border);
+    text-align: center; padding: 2rem; color: var(--muted); font-size: 14px;
+  }
+  footer strong { color: var(--accent); }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  @media (max-width: 600px) {
+    .hero { padding: 3rem 1rem 2rem; }
+    .hero-stats { gap: 1rem; }
+    nav { padding: 0 1rem; }
+    .sh-num { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════ NAV ══════════ -->
+<nav id="top-nav">
+  <span class="nav-logo">🐍 Python UZ</span>
+  <a href="#intro">Kirish</a>
+  <a href="#setup">O'rnatish</a>
+  <a href="#basics">Asoslar</a>
+  <a href="#datatypes">Ma'lumot turlari</a>
+  <a href="#operators">Operatorlar</a>
+  <a href="#conditions">Shartlar</a>
+  <a href="#loops">Sikllar</a>
+  <a href="#functions">Funksiyalar</a>
+  <a href="#strings">Satrlar</a>
+  <a href="#lists">Ro'yxatlar</a>
+  <a href="#dicts">Lug'atlar</a>
+  <a href="#oop">OOP</a>
+  <a href="#files">Fayllar</a>
+  <a href="#exceptions">Xatolar</a>
+  <a href="#modules">Modullar</a>
+  <a href="#advanced">Ilg'or</a>
+</nav>
+
+<!-- ══════════ HERO ══════════ -->
+<section class="hero">
+  <div class="hero-badge">🇺🇿 O'zbek tilida • To'liq va Chuqur Qo'llanma</div>
+  <h1>Python dasturlashni<br><span>o'zbek tilida</span> o'rgan</h1>
+  <p>Boshlang'ichdan professional darajagacha — barcha mavzular, chuqur tushuntirishlar, ko'p misollar</p>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-num">16</div><div class="stat-label">Mavzu</div></div>
+    <div class="stat"><div class="stat-num">200+</div><div class="stat-label">Kod misoli</div></div>
+    <div class="stat"><div class="stat-num">0</div><div class="stat-label">Oldingi bilim kerak</div></div>
+    <div class="stat"><div class="stat-num">100%</div><div class="stat-label">Bepul</div></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     01  KIRISH
+══════════════════════════════════════ -->
+<div class="section-sep" id="intro"></div>
+<div class="section-header">
+  <div class="sh-icon">🐍</div>
+  <div class="sh-text">
+    <h2>Python nima?</h2>
+    <p>Tilning tarixi, qo'llanish sohalari va nima uchun Python o'rganish kerak</p>
+  </div>
+  <div class="sh-num">01</div>
+</div>
+<div class="container">
+
+  <div class="grid grid-3">
+    <div class="card card-accent">
+      <h3>🌍 Eng ommabop til</h3>
+      <p>TIOBE, Stack Overflow va GitHub indekslarida doim birinchi o'rinlarda. Dunyoda 10+ million dasturchi Python ishlatadi.</p>
+    </div>
+    <div class="card card-green">
+      <h3>📖 Oddiy sintaksis</h3>
+      <p>Kodni o'qish ingliz tilidagi jumlani o'qishga o'xshaydi. Boshqa tillar bilan solishtirganda 3–5x kamroq kod yoziladi.</p>
+    </div>
+    <div class="card card-yellow">
+      <h3>🚀 Keng qo'llanish</h3>
+      <p>Web, AI, Data Science, Telegram bot, avtomatlashtirish, kiberxavfsizlik, o'yinlar — barchasi Python bilan.</p>
+    </div>
+    <div class="card card-orange">
+      <h3>📦 300k+ kutubxona</h3>
+      <p>PyPI (Python Package Index) da 300,000+ tayyor paket mavjud. Har qanday vazifaga tayyor yechim bor.</p>
+    </div>
+    <div class="card card-purple">
+      <h3>💼 Yaxshi maosh</h3>
+      <p>O'zbekistonda Python dasturchisi oyiga $500–3000+. Xalqaro bozorda $5000–15000+. Talab juda yuqori.</p>
+    </div>
+    <div class="card card-red">
+      <h3>🤝 Ulkan jamoa</h3>
+      <p>Stack Overflow, Reddit, Discord, Telegram — istalgan savolingizga daqiqalar ichida javob topasiz.</p>
+    </div>
+  </div>
+
+  <div class="sub-title">📜 Qisqacha tarix</div>
+  <div class="info-box">
+    <h4>Python qanday yaratilgan?</h4>
+    <p>Python 1991-yilda Niderlandiyalik dasturchi <strong>Guido van Rossum</strong> tomonidan yaratilgan. U tilni qishmanda o'tirib, ABC tilining kamchiliklarini bartaraf etish maqsadida boshlagan. Tilning nomi Monty Python komediya guruhidan olingan. Python 2.0 — 2000-yil, Python 3.0 — 2008-yil chiqdi. Hozirda Python Software Foundation boshqaradi.</p>
+  </div>
+
+  <div class="sub-title">🏗️ Python qayerda ishlatiladi?</div>
+  <div class="tbl-wrap">
+    <table>
+      <tr><th>Soha</th><th>Mashhur kutubxonalar</th><th>Misollar</th></tr>
+      <tr><td>🌐 Web dasturlash</td><td>Django, Flask, FastAPI</td><td>Instagram, Pinterest, Disqus</td></tr>
+      <tr><td>🤖 Sun'iy intellekt</td><td>TensorFlow, PyTorch, Keras</td><td>ChatGPT, Google Translate</td></tr>
+      <tr><td>📊 Data Science</td><td>pandas, NumPy, matplotlib</td><td>Netflix tavsiya tizimi</td></tr>
+      <tr><td>🤖 Telegram bot</td><td>aiogram, python-telegram-bot</td><td>Minglab O'zbek botlar</td></tr>
+      <tr><td>⚙️ Avtomatlashtirish</td><td>selenium, pyautogui, schedule</td><td>Excel, brauzer, fayl boshqarish</td></tr>
+      <tr><td>🔒 Kiberxavfsizlik</td><td>scapy, nmap, requests</td><td>Penetration testing</td></tr>
+      <tr><td>🎮 O'yinlar</td><td>pygame, pyglet</td><td>2D va oddiy 3D o'yinlar</td></tr>
+    </table>
+  </div>
+
+  <div class="info-box success" style="margin-top:1rem">
+    <h4>✅ Python vs Boshqa tillar</h4>
+    <ul>
+      <li><strong>Python vs Java:</strong> Python 5x kamroq kod, o'rganish osonroq. Java tezroq ishlaydi lekin yozish qiyin.</li>
+      <li><strong>Python vs JavaScript:</strong> Python ilmiy hisob-kitob va backendda kuchli. JS frontendda yaxshiroq.</li>
+      <li><strong>Python vs C++:</strong> Python ancha oson. C++ tezroq lekin murakkab. Birinchi til uchun Python ideal.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     02  O'RNATISH
+══════════════════════════════════════ -->
+<div class="section-sep" id="setup"></div>
+<div class="section-header green">
+  <div class="sh-icon">⚙️</div>
+  <div class="sh-text">
+    <h2>O'rnatish va sozlash</h2>
+    <p>Python o'rnatish, muharrir tanlash va birinchi dasturni yozish</p>
+  </div>
+  <div class="sh-num">02</div>
+</div>
+<div class="container">
+
+  <div class="sub-title green">📥 Python o'rnatish</div>
+  <div class="steps">
+    <div class="step" data-n="1">
+      <div class="step-content">
+        <h4>python.org saytiga kiring</h4>
+        <p><strong>python.org/downloads</strong> ga o'ting va eng yangi versiyani (3.12+) yuklab oling. Windows, macOS, Linux uchun alohida versiyalar bor.</p>
+      </div>
+    </div>
+    <div class="step" data-n="2">
+      <div class="step-content">
+        <h4>O'rnatishda PATH belgilang</h4>
+        <p>O'rnatish dasturi ochilganda <strong style="color:var(--red)">"Add Python to PATH"</strong> katagini albatta belgilang! Belgilamasangiz terminal/CMD dan Python ishlaMaydi.</p>
+      </div>
+    </div>
+    <div class="step" data-n="3">
+      <div class="step-content">
+        <h4>Muharrir (IDE) tanlang</h4>
+        <p><strong>VS Code</strong> — bepul, yengil, mashhur. <strong>PyCharm Community</strong> — bepul, Python uchun maxsus. <strong>Jupyter Notebook</strong> — Data Science uchun ideal.</p>
+      </div>
+    </div>
+    <div class="step" data-n="4">
+      <div class="step-content">
+        <h4>Tekshirish</h4>
+        <p>Terminal (macOS/Linux) yoki CMD (Windows) ni oching va <code>python --version</code> yoki <code>python3 --version</code> yozing. <code>Python 3.12.x</code> chiqsa — muvaffaqiyatli!</p>
+      </div>
+    </div>
+    <div class="step" data-n="5">
+      <div class="step-content">
+        <h4>pip tekshirish</h4>
+        <p><code>pip --version</code> yozing. pip — paketlar o'rnatuvchi. Kutubxonalarni o'rnatish uchun <code>pip install paket_nomi</code> ishlatiladi.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="sub-title green">🖥️ VS Code sozlash</div>
+  <div class="grid grid-2">
+    <div class="info-box">
+      <h4>🔌 Kerakli kengaytmalar</h4>
+      <ul>
+        <li><strong>Python</strong> — Microsoft (asosiy)</li>
+        <li><strong>Pylance</strong> — kodni tushunish</li>
+        <li><strong>Black Formatter</strong> — kod formatlash</li>
+        <li><strong>GitLens</strong> — Git integratsiya</li>
+        <li><strong>indent-rainbow</strong> — chekinishlarni ranglashtirish</li>
+      </ul>
+    </div>
+    <div class="info-box warn">
+      <h4>⚡ Tezkor buyruqlar (VS Code)</h4>
+      <ul>
+        <li><code>Ctrl+Shift+P</code> — buyruqlar palitasi</li>
+        <li><code>F5</code> — dasturni ishga tushirish</li>
+        <li><code>Ctrl+`</code> — terminal ochish</li>
+        <li><code>Alt+Shift+F</code> — kodni formatlash</li>
+        <li><code>Ctrl+/</code> — izoh qo'shish/olib tashlash</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sub-title green">🚀 Birinchi dastur</div>
+  <div class="code-block">
+    <div class="code-header"><span>hello.py</span><span class="badge badge-green">Ishga tushiring!</span></div>
+    <div class="code-body"><pre><span class="cm"># Birinchi Python dasturim</span>
+<span class="bi">print</span>(<span class="str">"Salom, Dunyo!"</span>)
+<span class="bi">print</span>(<span class="str">"Men Python o'rganmoqdaman!"</span>)
+<span class="bi">print</span>(<span class="str">"=" * 30</span>)
+
+<span class="var">ism</span> = <span class="bi">input</span>(<span class="str">"Ismingizni kiriting: "</span>)
+<span class="bi">print</span>(<span class="str">f"Xush kelibsiz, {<span class="var">ism</span>}! 🎉"</span>)
+<span class="bi">print</span>(<span class="str">f"Python o'rganish sarguzashtingiz boshlandi!"</span>)</pre></div>
+  </div>
+
+  <div class="info-box">
+    <h4>☁️ O'rnatmasdan online sinash</h4>
+    <p>Kompyuteringizga o'rnatmasdan ham sinab ko'rishingiz mumkin:</p>
+    <ul>
+      <li><strong>replit.com</strong> — brauzerdagi to'liq IDE</li>
+      <li><strong>colab.research.google.com</strong> — Google Colab (Data Science uchun zo'r)</li>
+      <li><strong>python.org/shell</strong> — oddiy interaktiv qobiq</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     03  ASOSLAR
+══════════════════════════════════════ -->
+<div class="section-sep" id="basics"></div>
+<div class="section-header yellow">
+  <div class="sh-icon">📝</div>
+  <div class="sh-text">
+    <h2>Python asoslari</h2>
+    <p>print, input, o'zgaruvchilar, izohlar, f-string — asosiy tushunchalar</p>
+  </div>
+  <div class="sh-num">03</div>
+</div>
+<div class="container">
+
+  <div class="sub-title yellow">🖨️ print() — ma'lumot chiqarish</div>
+  <div class="grid grid-2">
+    <div class="code-block">
+      <div class="code-header"><span>print_asoslar.py</span><span class="badge badge-blue">Asosiy</span></div>
+      <div class="code-body"><pre><span class="bi">print</span>(<span class="str">"Oddiy matn"</span>)
+<span class="bi">print</span>(<span class="num">42</span>)
+<span class="bi">print</span>(<span class="num">3.14</span>)
+<span class="bi">print</span>(<span class="kw">True</span>)
+<span class="bi">print</span>(<span class="kw">None</span>)
+
+<span class="cm"># Ko'p qiymat — vergul bilan</span>
+<span class="bi">print</span>(<span class="str">"Ism:"</span>, <span class="str">"Ali"</span>, <span class="str">"Yosh:"</span>, <span class="num">25</span>)
+
+<span class="cm"># separator — ajratuvchi o'zgartirish</span>
+<span class="bi">print</span>(<span class="str">"a"</span>, <span class="str">"b"</span>, <span class="str">"c"</span>, <span class="var">sep</span>=<span class="str">"-"</span>)   <span class="cm"># a-b-c</span>
+<span class="bi">print</span>(<span class="str">"a"</span>, <span class="str">"b"</span>, <span class="str">"c"</span>, <span class="var">sep</span>=<span class="str">", "</span>)  <span class="cm"># a, b, c</span>
+
+<span class="cm"># end — oxiri o'zgartirish</span>
+<span class="bi">print</span>(<span class="str">"Salom"</span>, <span class="var">end</span>=<span class="str">" "</span>)
+<span class="bi">print</span>(<span class="str">"Dunyo"</span>)  <span class="cm"># bir qatorda: Salom Dunyo</span>
+
+<span class="cm"># Takrorlash</span>
+<span class="bi">print</span>(<span class="str">"*"</span> * <span class="num">20</span>)    <span class="cm"># ********************</span>
+<span class="bi">print</span>(<span class="str">"-"</span> * <span class="num">20</span>)    <span class="cm"># --------------------</span>
+
+<span class="cm"># Bo'sh qator</span>
+<span class="bi">print</span>()  <span class="cm"># bo'sh qator chiqaradi</span></pre></div>
+    </div>
+    <div class="code-block">
+      <div class="code-header"><span>print_fstring.py</span><span class="badge badge-green">f-string</span></div>
+      <div class="code-body"><pre><span class="var">ism</span> = <span class="str">"Kamola"</span>
+<span class="var">yosh</span> = <span class="num">22</span>
+<span class="var">ball</span> = <span class="num">95.678</span>
+
+<span class="cm"># f-string — eng zamonaviy usul</span>
+<span class="bi">print</span>(<span class="str">f"Ism: {<span class="var">ism</span>}, Yosh: {<span class="var">yosh</span>}"</span>)
+
+<span class="cm"># Matematik amal ichida</span>
+<span class="bi">print</span>(<span class="str">f"5 * 7 = {<span class="num">5</span> * <span class="num">7</span>}"</span>)
+
+<span class="cm"># Formatlash</span>
+<span class="bi">print</span>(<span class="str">f"Ball: {<span class="var">ball</span>:.2f}"</span>)   <span class="cm"># 95.68</span>
+<span class="bi">print</span>(<span class="str">f"Ball: {<span class="var">ball</span>:.0f}"</span>)   <span class="cm"># 96</span>
+<span class="bi">print</span>(<span class="str">f"{<span class="num">1000000</span>:,}"</span>)        <span class="cm"># 1,000,000</span>
+<span class="bi">print</span>(<span class="str">f"{<span class="num">0.456</span>:.1%}"</span>)        <span class="cm"># 45.6%</span>
+
+<span class="cm"># Kenglik belgilash</span>
+<span class="bi">print</span>(<span class="str">f"{'Ism':<span class="num">10</span>}{'Ball':>5}"</span>)  <span class="cm"># Ism        Ball</span>
+<span class="bi">print</span>(<span class="str">f"{<span class="var">ism</span>:<span class="num">10</span>}{<span class="var">ball</span>:>5.1f}"</span>)
+
+<span class="cm"># Eski usullar (hali ham ishlaydi)</span>
+<span class="bi">print</span>(<span class="str">"Ism: %s, Yosh: %d"</span> % (<span class="var">ism</span>, <span class="var">yosh</span>))
+<span class="bi">print</span>(<span class="str">"Ism: {}, Yosh: {}"</span>.format(<span class="var">ism</span>, <span class="var">yosh</span>))</pre></div>
+    </div>
+  </div>
+
+  <div class="sub-title yellow">⌨️ input() — foydalanuvchidan ma'lumot olish</div>
+  <div class="grid grid-2">
+    <div class="code-block">
+      <div class="code-header"><span>input_asoslar.py</span></div>
+      <div class="code-body"><pre><span class="cm"># input() har doim STRING qaytaradi!</span>
+<span class="var">ism</span> = <span class="bi">input</span>(<span class="str">"Ismingiz: "</span>)
+<span class="bi">print</span>(<span class="bi">type</span>(<span class="var">ism</span>))  <span class="cm"># &lt;class 'str'&gt;</span>
+
+<span class="cm"># Son kiritish uchun int() ga aylantirish kerak</span>
+<span class="var">yosh</span> = <span class="bi">int</span>(<span class="bi">input</span>(<span class="str">"Yoshingiz: "</span>))
+<span class="bi">print</span>(<span class="bi">type</span>(<span class="var">yosh</span>))  <span class="cm"># &lt;class 'int'&gt;</span>
+
+<span class="cm"># Kasr son</span>
+<span class="var">narx</span> = <span class="bi">float</span>(<span class="bi">input</span>(<span class="str">"Narxi: "</span>))
+
+<span class="cm"># Ko'p qiymat — split() bilan</span>
+<span class="var">a</span>, <span class="var">b</span> = <span class="bi">map</span>(<span class="bi">int</span>, <span class="bi">input</span>(<span class="str">"Ikkita son: "</span>).split())
+<span class="bi">print</span>(<span class="str">f"Yig'indi: {<span class="var">a</span> + <span class="var">b</span>}"</span>)
+
+<span class="cm"># Ro'yxat ko'rinishida olish</span>
+<span class="var">sonlar</span> = <span class="bi">list</span>(<span class="bi">map</span>(<span class="bi">int</span>, <span class="bi">input</span>(<span class="str">"Sonlar: "</span>).split()))
+<span class="bi">print</span>(<span class="str">f"Maksimal: {<span class="bi">max</span>(<span class="var">sonlar</span>)}"</span>)</pre></div>
+    </div>
+    <div class="code-block">
+      <div class="code-header"><span>input_misol.py</span><span class="badge badge-yellow">Amaliy</span></div>
+      <div class="code-body"><pre><span class="cm"># Mini kassa tizimi</span>
+<span class="bi">print</span>(<span class="str">"=== Kassa tizimi ==="</span>)
+<span class="var">mahsulot</span> = <span class="bi">input</span>(<span class="str">"Mahsulot nomi: "</span>)
+<span class="var">narx</span> = <span class="bi">float</span>(<span class="bi">input</span>(<span class="str">"Narxi (so'm): "</span>))
+<span class="var">soni</span> = <span class="bi">int</span>(<span class="bi">input</span>(<span class="str">"Soni: "</span>))
+
+<span class="var">jami</span> = <span class="var">narx</span> * <span class="var">soni</span>
+<span class="var">qqs</span> = <span class="var">jami</span> * <span class="num">0.12</span>  <span class="cm"># 12% QQS</span>
+<span class="var">tolov</span> = <span class="var">jami</span> + <span class="var">qqs</span>
+
+<span class="bi">print</span>(<span class="str">f"\n--- Chek ---"</span>)
+<span class="bi">print</span>(<span class="str">f"Mahsulot : {<span class="var">mahsulot</span>}"</span>)
+<span class="bi">print</span>(<span class="str">f"Narx     : {<span class="var">narx</span>:,.0f} so'm"</span>)
+<span class="bi">print</span>(<span class="str">f"Soni     : {<span class="var">soni</span>} ta"</span>)
+<span class="bi">print</span>(<span class="str">f"Jami     : {<span class="var">jami</span>:,.0f} so'm"</span>)
+<span class="bi">print</span>(<span class="str">f"QQS (12%): {<span class="var">qqs</span>:,.0f} so'm"</span>)
+<span class="bi">print</span>(<span class="str">f"To'lov   : {<span class="var">tolov</span>:,.0f} so'm"</span>)</pre></div>
+    </div>
+  </div>
+
+  <div class="sub-title yellow">📦 O'zgaruvchilar (Variables)</div>
+  <div class="grid grid-2">
+    <div class="code-block">
+      <div class="code-header"><span>variables.py</span></div>
+      <div class="code-body"><pre><span class="cm"># O'zgaruvchi yaratish</span>
+<span class="var">ism</span> = <span class="str">"Alibek"</span>
+<span class="var">yosh</span> = <span class="num">25</span>
+<span class="var">boy</span> = <span class="num">175.5</span>
+<span class="var">talaba_mi</span> = <span class="kw">True</span>
+
+<span class="cm"># Python dinamik tipli — tur avtomatik</span>
+<span class="var">x</span> = <span class="num">10</span>      <span class="cm"># int</span>
+<span class="var">x</span> = <span class="str">"salom"</span>  <span class="cm"># endi str — xato emas!</span>
+<span class="var">x</span> = <span class="num">3.14</span>    <span class="cm"># endi float</span>
+
+<span class="cm"># Ko'p qiymat birga</span>
+<span class="var">a</span>, <span class="var">b</span>, <span class="var">c</span> = <span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>
+<span class="var">x</span> = <span class="var">y</span> = <span class="var">z</span> = <span class="num">0</span>  <span class="cm"># barchasi 0</span>
+
+<span class="cm"># Qiymatlarni almashtirish (PYTHON USULi)</span>
+<span class="var">a</span>, <span class="var">b</span> = <span class="var">b</span>, <span class="var">a</span>  <span class="cm"># vaqtincha o'zgaruvchi shart emas!</span>
+
+<span class="cm"># O'zgaruvchini o'chirish</span>
+<span class="var">temp</span> = <span class="num">100</span>
+<span class="kw">del</span> <span class="var">temp</span>  <span class="cm"># xotiradan o'chirildi</span></pre></div>
+    </div>
+    <div class="info-box" style="margin: 0.75rem 0;">
+      <h4>📋 Nomlash qoidalari</h4>
+      <ul>
+        <li>✅ <code>ism</code>, <code>mening_ismim</code>, <code>ism2</code>, <code>_ism</code></li>
+        <li>❌ <code>2ism</code> (raqam bilan boshlash)</li>
+        <li>❌ <code>ism-im</code> (defis ishlatish)</li>
+        <li>❌ <code>class</code>, <code>for</code>, <code>if</code> (kalit so'zlar)</li>
+        <li>📌 Katta-kichik farq qiladi: <code>Ism ≠ ism ≠ ISM</code></li>
+        <li>📌 Uslub: <code>snake_case</code> (kichik harflar + pastki chiziq)</li>
+        <li>📌 Konstantalar: <code>MAX_SON = 100</code> (katta harflar)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sub-title yellow">💬 Izohlar (Comments)</div>
+  <div class="code-block">
+    <div class="code-body"><pre><span class="cm"># Bu bir qatorli izoh — Python e'tibor bermaydi</span>
+<span class="var">x</span> = <span class="num">10</span>  <span class="cm"># bu ham izoh — kod bilan bir qatorda</span>
+
+<span class="str">"""
+Bu ko'p qatorli izoh (Docstring).
+Funksiya, class va modul haqida ma'lumot berish uchun.
+Python bu matnni o'qimaydi, lekin help() ko'rsatadi.
+"""</span>
+
+<span class="kw">def</span> <span class="fn">qoshish</span>(<span class="var">a</span>, <span class="var">b</span>):
+    <span class="str">"""
+    Ikki sonni qo'shadi va natijani qaytaradi.
+
+    Args:
+        a (int/float): Birinchi son
+        b (int/float): Ikkinchi son
+
+    Returns:
+        int/float: Qo'shish natijasi
+    
+    Example:
+        >>> qoshish(3, 4)
+        7
+    """</span>
+    <span class="kw">return</span> <span class="var">a</span> + <span class="var">b</span>
+
+<span class="bi">print</span>(<span class="fn">qoshish</span>.<span class="var">__doc__</span>)  <span class="cm"># docstringni ko'rsatadi</span></pre></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     04  MA'LUMOT TURLARI
+══════════════════════════════════════ -->
+<div class="section-sep" id="datatypes"></div>
+<div class="section-header orange">
+  <div class="sh-icon">🔢</div>
+  <div class="sh-text">
+    <h2>Ma'lumot turlari</h2>
+    <p>int, float, str, bool, None — barcha asosiy turlar va ular bilan ishlash</p>
+  </div>
+  <div class="sh-num">04</div>
+</div>
+<div class="container">
+
+  <div class="tbl-wrap">
+    <table>
+      <tr><th>Tur nomi</th><th>Inglizcha</th><th>Misol</th><th>type() natijasi</th><th>O'zgartiriladi?</th></tr>
+      <tr><td>Butun son</td><td>Integer</td><td><code>42, -5, 0, 1_000_000</code></td><td><code>&lt;class 'int'&gt;</code></td><td>—</td></tr>
+      <tr><td>Kasr son</td><td>Float</td><td><code>3.14, -0.5, 1e10</code></td><td><code>&lt;class 'float'&gt;</code></td><td>—</td></tr>
+      <tr><td>Murakkab son</td><td>Complex</td><td><code>3+4j, 1j</code></td><td><code>&lt;class 'complex'&gt;</code></td><td>—</td></tr>
+      <tr><td>Matn</td><td>String</td><td><code>"Salom", 'Python'</code></td><td><code>&lt;class 'str'&gt;</code></td><td>❌ Immutable</td></tr>
+      <tr><td>Mantiqiy</td><td>Boolean</td><td><code>True, False</code></td><td><code>&lt;class 'bool'&gt;</code></td><td>—</td></tr>
+      <tr><td>Ro'yxat</td><td>List</td><td><code>[1, 2, 3]</code></td><td><code>&lt;class 'list'&gt;</code></td><td>✅ Mutable</td></tr>
+      <tr><td>Kortej</td><td>Tuple</td><td><code>(1, 2, 3)</code></td><td><code>&lt;class 'tuple'&gt;</code></td><td>❌ Immutable</td></tr>
+      <tr><td>Lug'at</td><td>Dictionary</td><td><code>{"a": 1}</code></td><td><code>&lt;class 'dict'&gt;</code></td><td>✅ Mutable</td></tr>
+      <tr><td>To'plam</td><td>Set</td><td><code>{1, 2, 3}</code></td><td><code>&lt;class 'set'&gt;</code></td><td>✅ Mutable</td></tr>
+      <tr><td>Yo'q qiymat</td><td>NoneType</td><td><code>None</code></td><td><code>&lt;class 'NoneType'&gt;</code></td><td>—</td></tr>
+    </table>
+  </div>
+
+  <div class="sub-title orange">🔢 Sonlar bilan ishlash</div>
+  <div class="grid grid-2">
+    <div class="code-block">
+      <div class="code-header"><span>numbers.py</span></div>
+      <div class="code-body"><pre><span class="cm"># Integer — butun son</span>
+<span class="var">a</span> = <span class="num">42</span>
+<span class="var">b</span> = <span class="op">-</span><span class="num">17</span>
+<span class="var">katta</span> = <span class="num">1_000_000</span>   <span class="cm"># 1000000 (oqish uchun)</span>
+<span class="var">ikkilik</span> = <span class="num">0b1010</span>    <span class="cm"># 10 (binary)</span>
+<span class="var">hex_son</span> = <span class="num">0xFF</span>      <span class="cm"># 255 (hexadecimal)</span>
+<span class="var">oktal</span> = <span class="num">0o17</span>        <span class="cm"># 15 (octal)</span>
+
+<span class="cm"># Float — kasr son</span>
+<span class="var">pi</span> = <span class="num">3.14159</span>
+<span class="var">kichik</span> = <span class="num">1e-10</span>     <span class="cm"># 0.0000000001</span>
+<span class="var">katta_f</span> = <span class="num">1.5e6</span>    <span class="cm"># 1500000.0</span>
+
+<span class="cm"># Float aniqlik muammosi</span>
+<span class="bi">print</span>(<span class="num">0.1</span> + <span class="num">0.2</span>)  <span class="cm"># 0.30000000000000004 !</span>
+<span class="kw">from</span> <span class="var">decimal</span> <span class="kw">import</span> <span class="cls">Decimal</span>
+<span class="bi">print</span>(<span class="cls">Decimal</span>(<span class="str">'0.1'</span>) + <span class="cls">Decimal</span>(<span class="str">'0.2'</span>))  <span class="cm"># 0.3 ✓</span>
+
+<span class="cm"># Integer chegarasi yo'q (Python'da!)</span>
+<span class="bi">print</span>(<span class="num">2</span> ** <span class="num">1000</span>)  <span class="cm"># juda katta son!</span></pre></div>
+    </div>
+    <div class="code-block">
+      <div class="code-header"><span>math_funcs.py</span></div>
+      <div class="code-body"><pre><span class="kw">import</span> <span class="var">math</span>
+
+<span class="cm"># Matematik funksiyalar</span>
+<span class="bi">print</span>(<span class="bi">abs</span>(<span class="op">-</span><span class="num">15</span>))       <span class="cm"># 15 (mutlaq qiymat)</span>
+<span class="bi">print</span>(<span class="bi">round</span>(<span class="num">3.567</span>, <span class="num">2</span>)) <span class="cm"># 3.57</span>
+<span class="bi">print</span>(<span class="bi">max</span>(<span class="num">3</span>, <span class="num">7</span>, <span class="num">1</span>, <span class="num">9</span>))  <span class="cm"># 9</span>
+<span class="bi">print</span>(<span class="bi">min</span>(<span class="num">3</span>, <span class="num">7</span>, <span class="num">1</span>, <span class="num">9</span>))  <span class="cm"># 1</span>
+<span class="bi">print</span>(<span class="bi">sum</span>([<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>,<span class="num">4</span>]))  <span class="cm"># 10</span>
+<span class="bi">print</span>(<span class="bi">pow</span>(<span class="num">2</span>, <span class="num">8</span>))        <span class="cm"># 256</span>
+<span class="bi">print</span>(<span class="bi">divmod</span>(<span class="num">17</span>, <span class="num">5</span>))   <span class="cm"># (3, 2) — bo'linma, qoldiq</span>
+
+<span class="bi">print</span>(<span class="var">math</span>.pi)            <span class="cm"># 3.14159...</span>
+<span class="bi">print</span>(<span class="var">math</span>.e)             <span class="cm"># 2.71828...</span>
+<span class="bi">print</span>(<span class="var">math</span>.sqrt(<span class="num">144</span>))     <span class="cm"># 12.0</span>
+<span class="bi">print</span>(<span class="var">math</span>.log(<span class="num">1000</span>, <span class="num">10</span>)) <span class="cm"># 3.0</span>
+<span class="bi">print</span>(<span class="var">math</span>.factorial(<span class="num">10</span>)) <span class="cm"># 3628800</span>
+<span class="bi">print</span>(<span class="var">math</span>.gcd(<span class="num">48</span>, <span class="num">18</span>))   <span class="cm"># 6 (EKUB)</span>
+<span class="bi">print</span>(<span class="var">math</span>.ceil(<span class="num">4.1</span>))     <span class="cm"># 5</span>
+<span class="bi">print</span>(<span class="var">math</span>.floor(<span class="num">4.9</span>))    <span class="cm"># 4</span>
+<span class="bi">print</span>(<span class="var">math</span>.trunc(<span class="op">-</span><span class="num">4.9</span>))   <span class="cm"># -4</span></pre></div>
+    </div>
+  </div>
+
+  <div class="sub-title orange">🔄 Tur almashtirish (Type Casting)</div>
+  <div class="code-block">
+    <div class="code-body"><pre><span class="cm"># str → int</span>
+<span class="var">a</span> = <span class="bi">int</span>(<span class="str">"42"</span>)        <span class="cm"># 42</span>
+<span class="var">b</span> = <span class="bi">int</span>(<span class="str">"0xFF"</span>, <span class="num">16</span>) <span class="cm"># 255 (hex'dan)</span>
+<span class="var">c</span> = <span class="bi">int</span>(<span class="str">"1010"</span>, <span class="num">2</span>)  <span class="cm"># 10 (binary'dan)</span>
+
+<span class="cm"># int → boshqa turlar</span>
+<span class="bi">print</span>(<span class="bi">float</span>(<span class="num">7</span>))      <span class="cm"># 7.0</span>
+<span class="bi">print</span>(<span class="bi">str</span>(<span class="num">42</span>))       <span class="cm"># "42"</span>
+<span class="bi">print</span>(<span class="bi">bool</span>(<span class="num">0</span>))       <span class="cm"># False</span>
+<span class="bi">print</span>(<span class="bi">bool</span>(<span class="num">42</span>))      <span class="cm"># True</span>
+<span class="bi">print</span>(<span class="bi">bool</span>(<span class="str">""</span>))      <span class="cm"># False (bo'sh str)</span>
+<span class="bi">print</span>(<span class="bi">bool</span>(<span class="str">"salom"</span>)) <span class="cm"># True</span>
+<span class="bi">print</span>(<span class="bi">bool</span>([]))      <span class="cm"># False (bo'sh list)</span>
+<span class="bi">print</span>(<span class="bi">bool</span>(<span class="kw">None</span>))    <span class="cm"># False</span>
+
+<span class="cm"># Xavfli tur almashtirish — xato berishi mumkin</span>
+<span class="kw">try</span>:
+    <span class="bi">int</span>(<span class="str">"salom"</span>)     <span class="cm"># ValueError!</span>
+<span class="kw">except</span> <span class="cls">ValueError</span>:
+    <span class="bi">print</span>(<span class="str">"Xato: matnni songa aylantirib bo'lmaydi"</span>)</pre></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     05  OPERATORLAR
+══════════════════════════════════════ -->
+<div class="section-sep" id="operators"></div>
+<div class="section-header">
+  <div class="sh-icon">➗</div>
+  <div class="sh-text">
+    <h2>Operatorlar</h2>
+    <p>Arifmetik, solishtirish, mantiqiy, bitwise va o'zlashtirish operatorlari</p>
+  </div>
+  <div class="sh-num">05</div>
+</div>
+<div class="container">
+  <div class="grid grid-3">
+    <div class="card">
+      <h3>➕ Arifmetik operatorlar</h3>
+      <div class="code-block" style="margin-top:0.5rem">
+        <div class="code-body"><pre><span class="num">17</span> <span class="op">+</span> <span class="num">5</span>   <span class="cm"># 22  — qo'shish</span>
+<span class="num">17</span> <span class="op">-</span> <span class="num">5</span>   <span class="cm"># 12  — ayirish</span>
+<span class="num">17</span> <span class="op">*</span> <span class="num">5</span>   <span class="cm"># 85  — ko'paytirish</span>
+<span class="num">17</span> <span class="op">/</span> <span class="num">5</span>   <span class="cm"># 3.4 — bo'lish</span>
+<span class="num">17</span> <span class="op">//</span> <span class="num">5</span>  <span class="cm"># 3   — butun bo'lish</span>
+<span class="num">17</span> <span class="op">%</span> <span class="num">5</span>   <span class="cm"># 2   — qoldiq</span>
+<span class="num">2</span> <span class="op">**</span> <span class="num">10</span>  <span class="cm"># 1024 — daraja</span></pre></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>⚖️ Solishtirish operatorlari</h3>
+      <div class="code-block" style="margin-top:0.5rem">
+        <div class="code-body"><pre><span class="num">5</span> <span class="op">==</span> <span class="num">5</span>    <span class="cm"># True  — teng</span>
+<span class="num">5</span> <span class="op">!=</span> <span class="num">3</span>    <span class="cm"># True  — teng emas</span>
+<span class="num">5</span> <span class="op">&gt;</span> <span class="num">3</span>     <span class="cm"># True  — katta</span>
+<span class="num">5</span> <span class="op">&lt;</span> <span class="num">3</span>     <span class="cm"># False — kichik</span>
+<span class="num">5</span> <span class="op">&gt;=</span> <span class="num">5</span>    <span class="cm"># True  — katta/teng</span>
+<span class="num">5</span> <span class="op">&lt;=</span> <span class="num">4</span>    <span class="cm"># False — kichik/teng</span>
+<span class="num">1</span><span class="op">&lt;</span><span class="num">5</span><span class="op">&lt;</span><span class="num">10</span>    <span class="cm"># True  — zanjir</span></pre></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>🧠 Mantiqiy operatorlar</h3>
+      <div class="code-block" style="margin-top:0.5rem">
+        <div class="code-body"><pre><span class="kw">True</span> <span class="kw">and</span> <span class="kw">True</span>   <span class="cm"># True</span>
+<span class="kw">True</span> <span class="kw">and</span> <span class="kw">False</span>  <span class="cm"># False</span>
+<span class="kw">False</span> <span class="kw">or</span> <span class="kw">True</span>   <span class="cm"># True</span>
+<span class="kw">False</span> <span class="kw">or</span> <span class="kw">False</span>  <span class="cm"># False</span>
+<span class="kw">not True</span>         <span class="cm"># False</span>
+<span class="kw">not False</span>        <span class="cm"># True</span>
+<span class="cm"># Short-circuit evaluation:</span>
+<span class="cm"># and — birinchi False ko'rsa to'xtaydi</span>
+<span class="cm"># or  — birinchi True ko'rsa to'xtaydi</span></pre></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sub-title">🔧 O'zlashtirish operatorlari</div>
+  <div class="grid grid-2">
+    <div class="code-block">
+      <div class="code-body"><pre><span class="var">x</span> = <span class="num">20</span>
+<span class="var">x</span> <span class="op">+=</span> <span class="num">5</span>   <span class="cm"># x = x + 5  → 25</span>
+<span class="var">x</span> <span class="op">-=</span> <span class="num">3</span>   <span class="cm"># x = x - 3  → 22</span>
+<span class="var">x</span> <span class="op">*=</span> <span class="num">2</span>   <span class="cm"># x = x * 2  → 44</span>
+<span class="var">x</span> <span class="op">/=</span> <span class="num">4</span>   <span class="cm"># x = x / 4  → 11.0</span>
+<span class="var">x</span> <span class="op">//=</span> <span class="num">3</span>  <span class="cm"># x = x // 3 → 3.0</span>
+<span class="var">x</span> <span class="op">%=</span> <span class="num">2</span>   <span class="cm"># x = x % 2  → 1.0</span>
+<span class="var">x</span> <span class="op">**=</span> <span class="num">3</span>  <span class="cm"># x = x ** 3 → 1.0</span></pre></div>
+    </div>
+    <div class="code-block">
+      <div class="code-header"><span>Walrus operator :=  (Python 3.8+)</span></div>
+      <div class="code-body"><pre><span class="cm"># := — o'zlashtirish va tekshirish birgalikda</span>
+<span class="kw">import</span> <span class="var">random</span>
+
+<span class="cm"># Oddiy usul</span>
+<span class="var">n</span> = <span class="var">random</span>.randint(<span class="num">1</span>, <span class="num">10</span>)
+<span class="kw">while</span> <span class="var">n</span> != <span class="num">5</span>:
+    <span class="bi">print</span>(<span class="str">f"Tasodifiy: {<span class="var">n</span>}"</span>)
+    <span class="var">n</span> = <span class="var">random</span>.randint(<span class="num">1</span>, <span class="num">10</span>)
+
+<span class="cm"># Walrus bilan — qisqaroq</span>
+<span class="kw">while</span> (<span class="var">n</span> := <span class="var">random</span>.randint(<span class="num">1</span>, <span class="num">10</span>)) != <span class="num">5</span>:
+    <span class="bi">print</span>(<span class="str">f"Tasodifiy: {<span class="var">n</span>}"</span>)
+
+<span class="cm"># List da ham foydali</span>
+<span class="var">natijalar</span> = [<span class="var">y</span> := <span class="var">x</span><span class="op">**</span><span class="num">2</span>, <span class="var">y</span><span class="op">+</span><span class="num">1</span>, <span class="var">y</span><span class="op">-</span><span class="num">1</span>]</pre></div>
+    </div>
+  </div>
+
+  <div class="sub-title">🔢 Bitwise operatorlar</div>
+  <div class="code-block">
+    <div class="code-body"><pre><span class="var">a</span> = <span class="num">0b1010</span>  <span class="cm"># 10</span>
+<span class="var">b</span> = <span class="num">0b1100</span>  <span class="cm"># 12</span>
+
+<span class="bi">print</span>(<span class="var">a</span> <span class="op">&</span> <span class="var">b</span>)   <span class="cm"># 8  = 0b1000  (AND — ikkala biti 1 bo'lsa)</span>
+<span class="bi">print</span>(<span class="var">a</span> <span class="op">|</span> <span class="var">b</span>)   <span class="cm"># 14 = 0b1110  (OR  — kamida biri 1 bo'lsa)</span>
+<span class="bi">print</span>(<span class="var">a</span> <span class="op">^</span> <span class="var">b</span>)   <span class="cm"># 6  = 0b0110  (XOR — faqat biri 1 bo'lsa)</span>
+<span class="bi">print</span>(<span class="op">~</span><span class="var">a</span>)      <span class="cm"># -11         (NOT — bitlarni teskari)</span>
+<span class="bi">print</span>(<span class="var">a</span> <span class="op">&lt;&lt;</span> <span class="num">2</span>)  <span class="cm"># 40 = 0b101000 (chapga siljitish × 4)</span>
+<span class="bi">print</span>(<span class="var">a</span> <span class="op">&gt;&gt;</span> <span class="num">1</span>)  <span class="cm"># 5  = 0b101    (o'ngga siljitish ÷ 2)</span>
+
+<span class="cm"># Amaliy foydalanish: juft/toq tekshirish</span>
+<span class="bi">print</span>(<span class="num">7</span> <span class="op">&</span> <span class="num">1</span>)   <span class="cm"># 1 — toq</span>
+<span class="bi">print</span>(<span class="num">8</span> <span class="op">&</span> <span class="num">1</span>)   <span class="cm"># 0 — juft</span></pre></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     06  SHARTLAR
+══════════════════════════════════════ -->
+<div class="section-sep" id="conditions"></div>
+<div class="section-header green">
+  <div class="sh-icon">🔀</div>
+  <div class="sh-text">
+    <h2>Shartli operatorlar</h2>
+    <p>if, elif, else, match-case — qaror qabul qilish</p>
+  </div>
+  <div class="sh-num">06</div>
+</div>
+<div class="container">
+  <div class="grid grid-2">
+    <div>
+      <div class="code-block">
+        <div class="code-header"><span>if_elif_else.py</span><span class="badge badge-blue">Asosiy qurilma</span></div>
+        <div class="code-body"><pre><span class="var">ball</span> = <span class="bi">int</span>(<span class="bi">input</span>(<span class="str">"Ball (0-100): "</span>))
+
+<span class="kw">if</span> <span class="var">ball</span> <span class="op">&lt;</span> <span class="num">0</span> <span class="kw">or</span> <span class="var">ball</span> <span class="op">&gt;</span> <span class="num">100</span>:
+    <span class="bi">print</span>(<span class="str">"Noto'g'ri ball!"</span>)
+<span class="kw">elif</span> <span class="num">90</span> <span class="op">&lt;=</span> <span class="var">ball</span> <span class="op">&lt;=</span> <span class="num">100</span>:
+    <span class="bi">print</span>(<span class="str">"A'lo ⭐⭐⭐"</span>)
+<span class="kw">elif</span> <span class="num">70</span> <span class="op">&lt;=</span> <span class="var">ball</span> <span class="op">&lt;</span> <span class="num">90</span>:
+    <span class="bi">print</span>(<span class="str">"Yaxshi ⭐⭐"</span>)
+<span class="kw">elif</span> <span class="num">55</span> <span class="op">&lt;=</span> <span class="var">ball</span> <span class="op">&lt;</span> <span class="num">70</span>:
+    <span class="bi">print</span>(<span class="str">"Qoniqarli ⭐"</span>)
+<span class="kw">else</span>:
+    <span class="bi">print</span>(<span class="str">"Qoniqarsiz ❌"</span>)
+
+<span class="cm"># Ternary (bir qatorli if-else)</span>
+<span class="var">status</span> = <span class="str">"O'tdi"</span> <span class="kw">if</span> <span class="var">ball</span> <span class="op">&gt;=</span> <span class="num">55</span> <span class="kw">else</span> <span class="str">"Qoldi"</span>
+<span class="bi">print</span>(<span class="str">f"Holat: {<span class="var">status</span>}"</span>)</pre></div>
+      </div>
+      <div class="code-block" style="margin-top:0.75rem">
+        <div class="code-header"><span>nested_if.py</span><span class="badge badge-yellow">Ichma-ich if</span></div>
+        <div class="code-body"><pre><span class="var">yosh</span> = <span class="bi">int</span>(<span class="bi">input</span>(<span class="str">"Yosh: "</span>))
+<span class="var">ish_tajriba</span> = <span class="bi">int</span>(<span class="bi">input</span>(<span class="str">"Tajriba (yil): "</span>))
+
+<span class="kw">if</span> <span class="var">yosh</span> <span class="op">&gt;=</span> <span class="num">18</span>:
+    <span class="kw">if</span> <span class="var">ish_tajriba</span> <span class="op">&gt;=</span> <span class="num">3</span>:
+        <span class="bi">print</span>(<span class="str">"Ishga qabul qilindi ✅"</span>)
+    <span class="kw">else</span>:
+        <span class="bi">print</span>(<span class="str">"Tajriba yetarli emas ⚠️"</span>)
+<span class="kw">else</span>:
+    <span class="bi">print</span>(<span class="str">"18 yoshdan kichik ❌"</span>)
+
+<span class="cm"># Yaxshiroq usul — and bilan</span>
+<span class="kw">if</span> <span class="var">yosh</span> <span class="op">&gt;=</span> <span class="num">18</span> <span class="kw">and</span> <span class="var">ish_tajriba</span> <span class="op">&gt;=</span> <span class="num">3</span>:
+    <span class="bi">print</span>(<span class="str">"Qabul ✅"</span>)</pre></div>
+      </div>
+    </div>
+    <div>
+      <div class="code-block">
+        <div class="code-header"><span>match_case.py</span><span class="badge badge-purple">Python 3.10+</span></div>
+        <div class="code-body"><pre><span class="cm"># match-case — switch analog</span>
+<span class="var">buyruq</span> = <span class="bi">input</span>(<span class="str">"Buyruq: "</span>).lower()
+
+<span class="kw">match</span> <span class="var">buyruq</span>:
+    <span class="kw">case</span> <span class="str">"salom"</span> | <span class="str">"hi"</span> | <span class="str">"hello"</span>:
+        <span class="bi">print</span>(<span class="str">"Va alaykum assalom! 👋"</span>)
+    <span class="kw">case</span> <span class="str">"yordam"</span> | <span class="str">"help"</span>:
+        <span class="bi">print</span>(<span class="str">"Qanday yordam kerak?"</span>)
+    <span class="kw">case</span> <span class="str">"chiqish"</span> | <span class="str">"exit"</span>| <span class="str">"quit"</span>:
+        <span class="bi">print</span>(<span class="str">"Xayr! 👋"</span>)
+    <span class="kw">case</span> _:
+        <span class="bi">print</span>(<span class="str">f"'{<span class="var">buyruq</span>}' — noma'lum buyruq"</span>)
+
+<span class="cm"># Qiymat bilan match</span>
+<span class="var">kod</span> = <span class="num">404</span>
+<span class="kw">match</span> <span class="var">kod</span>:
+    <span class="kw">case</span> <span class="num">200</span>: <span class="bi">print</span>(<span class="str">"OK"</span>)
+    <span class="kw">case</span> <span class="num">404</span>: <span class="bi">print</span>(<span class="str">"Topilmadi"</span>)
+    <span class="kw">case</span> <span class="num">500</span>: <span class="bi">print</span>(<span class="str">"Server xatosi"</span>)
+    <span class="kw">case</span> _:   <span class="bi">print</span>(<span class="str">"Noma'lum kod"</span>)</pre></div>
+      </div>
+      <div class="info-box warn" style="margin-top:0.75rem">
+        <h4>⚠️ Muhim: Chekinish (indentation)</h4>
+        <p>Python da bloklar <strong>4 bo'sh joy</strong> yoki <strong>Tab</strong> bilan ajratiladi. Bu majburiy! Tab va bo'shliqni aralashtirib bo'lmaydi. VS Code avtomatik qo'shadi.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="sub-title green">🛒 Amaliy misol — savdo tizimi</div>
+  <div class="code-block">
+    <div class="code-body"><pre><span class="cm"># Chegirma tizimi</span>
+<span class="var">xarid_sum</span> = <span class="bi">float</span>(<span class="bi">input</span>(<span class="str">"Xarid summasi (so'm): "</span>))
+<span class="var">a'zo_mi</span> = <span class="bi">input</span>(<span class="str">"A'zo bo'lsangiz 'ha' yozing: "</span>).lower() == <span class="str">"ha"</span>
+
+<span class="kw">if</span> <span class="var">xarid_sum</span> <span class="op">&gt;=</span> <span class="num">1_000_000</span>:
+    <span class="var">chegirma</span> = <span class="num">0.20</span>
+<span class="kw">elif</span> <span class="var">xarid_sum</span> <span class="op">&gt;=</span> <span class="num">500_000</span>:
+    <span class="var">chegirma</span> = <span class="num">0.15</span>
+<span class="kw">elif</span> <span class="var">xarid_sum</span> <span class="op">&gt;=</span> <span class="num">100_000</span>:
+    <span class="var">chegirma</span> = <span class="num">0.10</span>
+<span class="kw">else</span>:
+    <span class="var">chegirma</span> = <span class="num">0.05</span>
+
+<span class="kw">if</span> <span class="var">a'zo_mi</span>:
+    <span class="var">chegirma</span> += <span class="num">0.05</span>  <span class="cm"># a'zolarga +5%</span>
+
+<span class="var">tejamkorlik</span> = <span class="var">xarid_sum</span> * <span class="var">chegirma</span>
+<span class="var">tolov</span> = <span class="var">xarid_sum</span> - <span class="var">tejamkorlik</span>
+
+<span class="bi">print</span>(<span class="str">f"\nXarid: {<span class="var">xarid_sum</span>:,.0f} so'm"</span>)
+<span class="bi">print</span>(<span class="str">f"Chegirma: {<span class="var">chegirma</span>:.0%} ({<span class="var">tejamkorlik</span>:,.0f} so'm)"</span>)
+<span class="bi">print</span>(<span class="str">f"To'lov: {<span class="var">tolov</span>:,.0f} so'm"</span>)</pre></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     07  SIKLLAR
+══════════════════════════════════════ -->
+<div class="section-sep" id="loops"></div>
+<div class="section-header purple">
+  <div class="sh-icon">🔄</div>
+  <div class="sh-text">
+    <h2>Sikllar (Loops)</h2>
+    <p>for, while, break, continue, else, list comprehension</p>
+  </div>
+  <div class="sh-num">07</div>
+</div>
+<div class="container">
+  <div class="grid grid-2">
+    <div>
+      <div class="sub-title purple">🔁 for sikli</div>
+      <div class="code-block">
+        <div class="code-body"><pre><span class="cm"># range() bilan</span>
+<span class="kw">for</span> <span class="var">i</span> <span class="kw">in</span> <span class="bi">range</span>(<span class="num">5</span>):
+    <span class="bi">print</span>(<span class="var">i</span>)          <span class="cm"># 0 1 2 3 4</span>
+
+<span class="kw">for</span> <span class="var">i</span> <span class="kw">in</span> <span class="bi">range</span>(<span class="num">1</span>, <span class="num">11</span>):
+    <span class="bi">print</span>(<span class="var">i</span>)          <span class="cm"># 1 2 ... 10</span>
+
+<span class="kw">for</span> <span class="var">i</span> <span class="kw">in</span> <span class="bi">range</span>(<span class="num">10</span>, <span class="num">0</span>, <span class="op">-</span><span class="num">2</span>):
+    <span class="bi">print</span>(<span class="var">i</span>)          <span class="cm"># 10 8 6 4 2</span>
+
+<span class="cm"># Ro'yxat ustida</span>
+<span class="var">davlatlar</span> = [<span class="str">"O'zbek"</span>, <span class="str">"Qozog'iston"</span>, <span class="str">"Rossiya"</span>]
+<span class="kw">for</span> <span class="var">davlat</span> <span class="kw">in</span> <span class="var">davlatlar</span>:
+    <span class="bi">print</span>(<span class="str">f"— {<span class="var">davlat</span>}"</span>)
+
+<span class="cm"># enumerate — indeks ham kerak bo'lsa</span>
+<span class="kw">for</span> <span class="var">i</span>, <span class="var">davlat</span> <span class="kw">in</span> <span class="bi">enumerate</span>(<span class="var">davlatlar</span>, <span class="num">1</span>):
+    <span class="bi">print</span>(<span class="str">f"{<span class="var">i</span>}. {<span class="var">davlat</span>}"</span>)
+
+<span class="cm"># zip — ikkita ro'yxatni birga</span>
+<span class="var">ismlar</span> = [<span class="str">"Ali"</span>, <span class="str">"Vali"</span>, <span class="str">"Kamol"</span>]
+<span class="var">yoshlar</span> = [<span class="num">25</span>, <span class="num">30</span>, <span class="num">22</span>]
+<span class="kw">for</span> <span class="var">ism</span>, <span class="var">yosh</span> <span class="kw">in</span> <span class="bi">zip</span>(<span class="var">ismlar</span>, <span class="var">yoshlar</span>):
+    <span class="bi">print</span>(<span class="str">f"{<span class="var">ism</span>}: {<span class="var">yosh</span>} yosh"</span>)
+
+<span class="cm"># Matn ustida</span>
+<span class="kw">for</span> <span class="var">harf</span> <span class="kw">in</span> <span class="str">"Python"</span>:
+    <span class="bi">print</span>(<span class="var">harf</span>, <span class="var">end</span>=<span class="str">" "</span>)  <span class="cm"># P y t h o n</span></pre></div>
+      </div>
+    </div>
+    <div>
+      <div class="sub-title purple">⏳ while sikli</div>
+      <div class="code-block">
+        <div class="code-body"><pre><span class="cm"># Klassik while</span>
+<span class="var">n</span> = <span class="num">1</span>
+<span class="kw">while</span> <span class="var">n</span> <span class="op">&lt;=</span> <span class="num">10</span>:
+    <span class="bi">print</span>(<span class="var">n</span>)
+    <span class="var">n</span> <span class="op">+=</span> <span class="num">1</span>
+
+<span class="cm"># Taxminiy o'yin — break bilan</span>
+<span class="kw">import</span> <span class="var">random</span>
+<span class="var">sir_son</span> = <span class="var">random</span>.randint(<span class="num">1</span>, <span class="num">100</span>)
+<span class="var">urinish</span> = <span class="num">0</span>
+
+<span class="kw">while</span> <span class="kw">True</span>:
+    <span class="var">taxmin</span> = <span class="bi">int</span>(<span class="bi">input</span>(<span class="str">"Taxminingiz: "</span>))
+    <span class="var">urinish</span> <span class="op">+=</span> <span class="num">1</span>
+    <span class="kw">if</span> <span class="var">taxmin</span> <span class="op">&lt;</span> <span class="var">sir_son</span>:
+        <span class="bi">print</span>(<span class="str">"Katta!"</span>)
+    <span class="kw">elif</span> <span class="var">taxmin</span> <span class="op">&gt;</span> <span class="var">sir_son</span>:
+        <span class="bi">print</span>(<span class="str">"Kichik!"</span>)
+    <span class="kw">else</span>:
+        <span class="bi">print</span>(<span class="str">f"To'g'ri! {<span class="var">urinish</span>} urinishda ✅"</span>)
+        <span class="kw">break</span>
+
+<span class="cm"># while-else</span>
+<span class="var">i</span> = <span class="num">0</span>
+<span class="kw">while</span> <span class="var">i</span> <span class="op">&lt;</span> <span class="num">5</span>:
+    <span class="var">i</span> <span class="op">+=</span> <span class="num">1</span>
+<span class="kw">else</span>:
+    <span class="bi">print</span>(<span class="str">"Sikl normal tugadi"</span>)  <span class="cm"># break bo'lmasa ishlaydi</span></pre></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sub-title purple">🛠️ break, continue, pass</div>
+  <div class="grid grid-2">
+    <div class="code-block">
+      <div class="code-body"><pre><span class="cm"># break — siklni to'liq to'xtatish</span>
+<span class="kw">for</span> <span class="var">i</span> <span class="kw">in</span> <span class="bi">range</span>(<span class="num">10</span>):
+    <span class="kw">if</span> <span class="var">i</span> <span class="op">==</span> <span class="num">5</span>:
+        <span class="kw">break</span>
+    <span class="bi">print</span>(<span class="var">i</span>)  <span class="cm"># 0 1 2 3 4</span>
+
+<span class="cm"># continue — bu iteratsiyani o'tkazib yuborish</span>
+<span class="kw">for</span> <span class="var">i</span> <span class="kw">in</span> <span class="bi">range</span>(<span class="num">10</span>):
+    <span class="kw">if</span> <span class="var">i</span> <span class="op">%</span> <span class="num">2</span> <span class="op">==</span> <span class="num">0</span>:
+        <span class="kw">continue</span>
+    <span class="bi">print</span>(<span class="var">i</span>)  <span class="cm"># 1 3 5 7 9 (juftlar o'tkazildi)</span>
+
+<span class="cm"># pass — bo'sh blok (hozircha hechnarsa)</span>
+<span class="kw">for</span> <span class="var">i</span> <span class="kw">in</span> <span class="bi">range</span>(<span class="num">5</span>):
+    <span class="kw">pass</span>  <span class="cm"># keyinroq to'ldiraman</span></pre></div>
+    </div>
+    <div class="code-block">
+      <div class="code-header"><span>list_comprehension.py</span><span class="badge badge-green">Pythonic</span></div>
+      <div class="code-body"><pre><span class="cm"># List comprehension — qisqa va chiroyli</span>
+<span class="var">kvadratlar</span> = [<span class="var">x</span><span class="op">**</span><span class="num">2</span> <span class="kw">for</span> <span class="var">x</span> <span class="kw">in</span> <span class="bi">range</span>(<span class="num">1</span>, <span class="num">11</span>)]
+<span class="cm"># [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]</span>
+
+<span class="cm"># Shartli filtrlash</span>
+<span class="var">toqlar</span> = [<span class="var">x</span> <span class="kw">for</span> <span class="var">x</span> <span class="kw">in</span> <span class="bi">range</span>(<span class="num">20</span>) <span class="kw">if</span> <span class="var">x</span> <span class="op">%</span> <span class="num">2</span> != <span class="num">0</span>]
+
+<span class="cm"># Matn bilan</span>
+<span class="var">sozlar</span> = [<span class="str">"python"</span>, <span class="str">"dasturlash"</span>, <span class="str">"kod"</span>]
+<span class="var">katta</span> = [<span class="var">s</span>.upper() <span class="kw">for</span> <span class="var">s</span> <span class="kw">in</span> <span class="var">sozlar</span>]
+<span class="cm"># ['PYTHON', 'DASTURLASH', 'KOD']</span>
+
+<span class="cm"># Ichma-ich (2D)</span>
+<span class="var">jadval</span> = [[<span class="var">i</span>*<span class="var">j</span> <span class="kw">for</span> <span class="var">j</span> <span class="kw">in</span> <span class="bi">range</span>(<span class="num">1</span>,<span class="num">4</span>)] <span class="kw">for</span> <span class="var">i</span> <span class="kw">in</span> <span class="bi">range</span>(<span class="num">1</span>,<span class="num">4</span>)]
+<span class="cm"># [[1,2,3],[2,4,6],[3,6,9]]</span>
+
+<span class="cm"># Dict comprehension</span>
+<span class="var">kv</span> = {<span class="var">x</span>: <span class="var">x</span><span class="op">**</span><span class="num">2</span> <span class="kw">for</span> <span class="var">x</span> <span class="kw">in</span> <span class="bi">range</span>(<span class="num">5</span>)}
+<span class="cm"># {0:0, 1:1, 2:4, 3:9, 4:16}</span>
+
+<span class="cm"># Set comprehension</span>
+<span class="var">tekshir</span> = {<span class="var">x</span> <span class="op">%</span> <span class="num">3</span> <span class="kw">for</span> <span class="var">x</span> <span class="kw">in</span> <span class="bi">range</span>(<span class="num">10</span>)}
+<span class="cm"># {0, 1, 2}</span></pre></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     08  FUNKSIYALAR
+══════════════════════════════════════ -->
+<div class="section-sep" id="functions"></div>
+<div class="section-header yellow">
+  <div class="sh-icon">⚡</div>
+  <div class="sh-text">
+    <h2>Funksiyalar</h2>
+    <p>def, parametrlar, return, *args, **kwargs, lambda, scope, recursion</p>
+  </div>
+  <div class="sh-num">08</div>
+</div>
+<div class="container">
+  <div class="grid grid-2">
+    <div class="code-block">
+      <div class="code-header"><span>funksiya_asoslar.py</span></div>
+      <div class="code-body"><pre><span class="cm"># Oddiy funksiya</span>
+<span class="kw">def</span> <span class="fn">salom</span>():
+    <span class="bi">print</span>(<span class="str">"Salom!"</span>)
+
+<span class="cm"># Parametrli</span>
+<span class="kw">def</span> <span class="fn">greet</span>(<span class="var">ism</span>, <span class="var">yosh</span>):
+    <span class="bi">print</span>(<span class="str">f"Salom {<span class="var">ism</span>}, {<span class="var">yosh</span>} yoshdasan!"</span>)
+
+<span class="fn">greet</span>(<span class="str">"Ali"</span>, <span class="num">25</span>)           <span class="cm"># pozitsion</span>
+<span class="fn">greet</span>(<span class="var">yosh</span>=<span class="num">22</span>, <span class="var">ism</span>=<span class="str">"Vali"</span>) <span class="cm"># kalit bilan</span>
+
+<span class="cm"># Default qiymat</span>
+<span class="kw">def</span> <span class="fn">kuch</span>(<span class="var">asos</span>, <span class="var">daraja</span>=<span class="num">2</span>):
+    <span class="kw">return</span> <span class="var">asos</span> ** <span class="var">daraja</span>
+
+<span class="bi">print</span>(<span class="fn">kuch</span>(<span class="num">5</span>))     <span class="cm"># 25 (daraja=2)</span>
+<span class="bi">print</span>(<span class="fn">kuch</span>(<span class="num">2</span>, <span class="num">10</span>)) <span class="cm"># 1024</span>
+
+<span class="cm"># Ko'p qiymat qaytarish (tuple)</span>
+<span class="kw">def</span> <span class="fn">min_max</span>(<span class="var">r</span>):
+    <span class="kw">return</span> <span class="bi">min</span>(<span class="var">r</span>), <span class="bi">max</span>(<span class="var">r</span>)
+
+<span class="var">kichik</span>, <span class="var">katta</span> = <span class="fn">min_max</span>([<span class="num">3</span>,<span class="num">1</span>,<span class="num">4</span>,<span class="num">7</span>,<span class="num">2</span>])
+<span class="bi">print</span>(<span class="var">kichik</span>, <span class="var">katta</span>)  <span class="cm"># 1 7</span></pre></div>
+    </div>
+    <div class="code-block">
+      <div class="code-header"><span>args_kwargs.py</span></div>
+      <div class="code-body"><pre><span class="cm"># *args — ixtiyoriy miqdorda argument</span>
+<span class="kw">def</span> <span class="fn">yigindi</span>(*<span class="var">sonlar</span>):
+    <span class="bi">print</span>(<span class="bi">type</span>(<span class="var">sonlar</span>))  <span class="cm"># &lt;tuple&gt;</span>
+    <span class="kw">return</span> <span class="bi">sum</span>(<span class="var">sonlar</span>)
+
+<span class="bi">print</span>(<span class="fn">yigindi</span>(<span class="num">1</span>, <span class="num">2</span>))          <span class="cm"># 3</span>
+<span class="bi">print</span>(<span class="fn">yigindi</span>(<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>)) <span class="cm"># 15</span>
+
+<span class="cm"># **kwargs — kalit-qiymat argumentlar</span>
+<span class="kw">def</span> <span class="fn">anketa</span>(**<span class="var">malumot</span>):
+    <span class="bi">print</span>(<span class="bi">type</span>(<span class="var">malumot</span>))  <span class="cm"># &lt;dict&gt;</span>
+    <span class="kw">for</span> <span class="var">k</span>, <span class="var">v</span> <span class="kw">in</span> <span class="var">malumot</span>.items():
+        <span class="bi">print</span>(<span class="str">f"  {<span class="var">k</span>}: {<span class="var">v</span>}"</span>)
+
+<span class="fn">anketa</span>(<span class="var">ism</span>=<span class="str">"Kamol"</span>, <span class="var">yosh</span>=<span class="num">22</span>, <span class="var">shahar</span>=<span class="str">"Andijon"</span>)
+
+<span class="cm"># Barchasi birga</span>
+<span class="kw">def</span> <span class="fn">universal</span>(<span class="var">majburiy</span>, *<span class="var">args</span>, <span class="var">kalit</span>=<span class="str">"default"</span>, **<span class="var">kwargs</span>):
+    <span class="bi">print</span>(<span class="var">majburiy</span>, <span class="var">args</span>, <span class="var">kalit</span>, <span class="var">kwargs</span>)</pre></div>
+    </div>
+  </div>
+
+  <div class="sub-title yellow">λ Lambda va Yuqori tartibli funksiyalar</div>
+  <div class="grid grid-2">
+    <div class="code-block">
+      <div class="code-body"><pre><span class="cm"># Lambda — anonim funksiya</span>
+<span class="var">kvadrat</span> = <span class="kw">lambda</span> <span class="var">x</span>: <span class="var">x</span><span class="op">**</span><span class="num">2</span>
+<span class="var">qoshish</span> = <span class="kw">lambda</span> <span class="var">a</span>,<span class="var">b</span>: <span class="var">a</span>+<span class="var">b</span>
+<span class="var">absval</span> = <span class="kw">lambda</span> <span class="var">x</span>: <span class="var">x</span> <span class="kw">if</span> <span class="var">x</span> <span class="op">&gt;=</span> <span class="num">0</span> <span class="kw">else</span> <span class="op">-</span><span class="var">x</span>
+
+<span class="cm"># map() — har elementga funksiya qo'llash</span>
+<span class="var">sonlar</span> = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>]
+<span class="var">kv</span> = <span class="bi">list</span>(<span class="bi">map</span>(<span class="kw">lambda</span> <span class="var">x</span>: <span class="var">x</span><span class="op">**</span><span class="num">2</span>, <span class="var">sonlar</span>))
+<span class="cm"># [1, 4, 9, 16, 25]</span>
+
+<span class="cm"># filter() — shartga moslarni tanlash</span>
+<span class="var">juftlar</span> = <span class="bi">list</span>(<span class="bi">filter</span>(<span class="kw">lambda</span> <span class="var">x</span>: <span class="var">x</span><span class="op">%</span><span class="num">2</span>==<span class="num">0</span>, <span class="var">sonlar</span>))
+<span class="cm"># [2, 4]</span>
+
+<span class="cm"># sorted() — saralash</span>
+<span class="var">talabalar</span> = [(<span class="str">"Ali"</span>,<span class="num">95</span>),(<span class="str">"Vali"</span>,<span class="num">87</span>),(<span class="str">"Kamol"</span>,<span class="num">92</span>)]
+<span class="var">saralangan</span> = <span class="bi">sorted</span>(<span class="var">talabalar</span>, <span class="var">key</span>=<span class="kw">lambda</span> <span class="var">x</span>: <span class="var">x</span>[<span class="num">1</span>], <span class="var">reverse</span>=<span class="kw">True</span>)
+<span class="cm"># [('Ali',95), ('Kamol',92), ('Vali',87)]</span></pre></div>
+    </div>
+    <div class="code-block">
+      <div class="code-header"><span>recursion.py</span><span class="badge badge-red">Rekursiya</span></div>
+      <div class="code-body"><pre><span class="cm"># Faktorial — rekursiv</span>
+<span class="kw">def</span> <span class="fn">faktorial</span>(<span class="var">n</span>):
+    <span class="kw">if</span> <span class="var">n</span> <span class="op">==</span> <span class="num">0</span> <span class="kw">or</span> <span class="var">n</span> <span class="op">==</span> <span class="num">1</span>:  <span class="cm"># Base case</span>
+        <span class="kw">return</span> <span class="num">1</span>
+    <span class="kw">return</span> <span class="var">n</span> * <span class="fn">faktorial</span>(<span class="var">n</span> <span class="op">-</span> <span class="num">1</span>)
+
+<span class="bi">print</span>(<span class="fn">faktorial</span>(<span class="num">5</span>))   <span class="cm"># 120</span>
+<span class="bi">print</span>(<span class="fn">faktorial</span>(<span class="num">10</span>))  <span class="cm"># 3628800</span>
+
+<span class="cm"># Fibonacci — rekursiv</span>
+<span class="kw">def</span> <span class="fn">fib</span>(<span class="var">n</span>):
+    <span class="kw">if</span> <span class="var">n</span> <span class="op">&lt;=</span> <span class="num">1</span>:
+        <span class="kw">return</span> <span class="var">n</span>
+    <span class="kw">return</span> <span class="fn">fib</span>(<span class="var">n</span><span class="op">-</span><span class="num">1</span>) + <span class="fn">fib</span>(<span class="var">n</span><span class="op">-</span><span class="num">2</span>)
+
+<span class="bi">print</span>([<span class="fn">fib</span>(<span class="var">i</span>) <span class="kw">for</span> <span class="var">i</span> <span class="kw">in</span> <span class="bi">range</span>(<span class="num">10</span>)])
+<span class="cm"># [0,1,1,2,3,5,8,13,21,34]</span>
+
+<span class="cm"># Scope: LEGB qoidasi</span>
+<span class="var">x</span> = <span class="str">"Global"</span>
+<span class="kw">def</span> <span class="fn">tashqi</span>():
+    <span class="var">x</span> = <span class="str">"Enclosing"</span>
+    <span class="kw">def</span> <span class="fn">ichki</span>():
+        <span class="var">x</span> = <span class="str">"Local"</span>
+        <span class="bi">print</span>(<span class="var">x</span>)  <span class="cm"># Local</span>
+    <span class="fn">ichki</span>()
+    <span class="bi">print</span>(<span class="var">x</span>)   <span class="cm"># Enclosing</span>
+<span class="fn">tashqi</span>()
+<span class="bi">print</span>(<span class="var">x</span>)      <span class="cm"># Global</span></pre></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     09  SATRLAR
+══════════════════════════════════════ -->
+<div class="section-sep" id="strings"></div>
+<div class="section-header teal">
+  <div class="sh-icon">📝</div>
+  <div class="sh-text">
+    <h2>Satrlar (Strings)</h2>
+    <p>Barcha string metodlari, slicing, regex va amaliy misollar</p>
+  </div>
+  <div class="sh-num">09</div>
+</div>
+<div class="container">
+  <div class="code-block">
+    <div class="code-header"><span>strings_full.py</span><span class="badge badge-green">Barcha metodlar</span></div>
+    <div class="code-body"><pre><span class="var">s</span> = <span class="str">"  Salom, Python Dunyosi!  "</span>
+
+<span class="cm"># ── Bo'shliq tozalash ──</span>
+<span class="bi">print</span>(<span class="var">s</span>.strip())           <span class="cm"># ikki tomondan</span>
+<span class="bi">print</span>(<span class="var">s</span>.lstrip())          <span class="cm"># chapdan</span>
+<span class="bi">print</span>(<span class="var">s</span>.rstrip())          <span class="cm"># o'ngdan</span>
+
+<span class="cm"># ── Registr ──</span>
+<span class="bi">print</span>(<span class="var">s</span>.upper())            <span class="cm"># SALOM, PYTHON DUNYOSI!</span>
+<span class="bi">print</span>(<span class="var">s</span>.lower())            <span class="cm"># salom, python dunyosi!</span>
+<span class="bi">print</span>(<span class="var">s</span>.title())            <span class="cm"># Salom, Python Dunyosi!</span>
+<span class="bi">print</span>(<span class="var">s</span>.capitalize())      <span class="cm"># Salom, python dunyosi!</span>
+<span class="bi">print</span>(<span class="var">s</span>.swapcase())        <span class="cm"># sALOM, pYTHON dUNYOSI!</span>
+
+<span class="cm"># ── Qidirish ──</span>
+<span class="bi">print</span>(<span class="var">s</span>.find(<span class="str">"Python"</span>))     <span class="cm"># 9 (indeks, -1 agar yo'q)</span>
+<span class="bi">print</span>(<span class="var">s</span>.rfind(<span class="str">"o"</span>))         <span class="cm"># oxiridagi o</span>
+<span class="bi">print</span>(<span class="var">s</span>.index(<span class="str">"Python"</span>))    <span class="cm"># 9 (yo'q bo'lsa xato)</span>
+<span class="bi">print</span>(<span class="var">s</span>.count(<span class="str">"o"</span>))         <span class="cm"># necha marta uchragan</span>
+<span class="bi">print</span>(<span class="str">"Python"</span> <span class="kw">in</span> <span class="var">s</span>)        <span class="cm"># True</span>
+
+<span class="cm"># ── Tekshirish ──</span>
+<span class="bi">print</span>(<span class="str">"Salom"</span>.startswith(<span class="str">"Sa"</span>))  <span class="cm"># True</span>
+<span class="bi">print</span>(<span class="str">"Salom"</span>.endswith(<span class="str">"om"</span>))    <span class="cm"># True</span>
+<span class="bi">print</span>(<span class="str">"123"</span>.isdigit())            <span class="cm"># True</span>
+<span class="bi">print</span>(<span class="str">"abc"</span>.isalpha())            <span class="cm"># True</span>
+<span class="bi">print</span>(<span class="str">"abc123"</span>.isalnum())         <span class="cm"># True</span>
+<span class="bi">print</span>(<span class="str">"   "</span>.isspace())            <span class="cm"># True</span>
+<span class="bi">print</span>(<span class="str">"KATTA"</span>.isupper())          <span class="cm"># True</span>
+<span class="bi">print</span>(<span class="str">"kichik"</span>.islower())         <span class="cm"># True</span>
+
+<span class="cm"># ── O'zgartirish ──</span>
+<span class="bi">print</span>(<span class="var">s</span>.replace(<span class="str">"Python"</span>, <span class="str">"Go"</span>))      <span class="cm"># almashtirish</span>
+<span class="bi">print</span>(<span class="var">s</span>.replace(<span class="str">"o"</span>, <span class="str">"0"</span>, <span class="num">2</span>))         <span class="cm"># faqat 2 marta</span>
+
+<span class="cm"># ── Bo'lish va birlashtirish ──</span>
+<span class="bi">print</span>(<span class="str">"a,b,c,d"</span>.split(<span class="str">","</span>))         <span class="cm"># ['a','b','c','d']</span>
+<span class="bi">print</span>(<span class="str">"a b  c"</span>.split())             <span class="cm"># ['a','b','c'] (bo'shliq)</span>
+<span class="bi">print</span>(<span class="str">"a\nb\nc"</span>.splitlines())       <span class="cm"># ['a','b','c']</span>
+<span class="bi">print</span>(<span class="str">"-"</span>.join([<span class="str">"a"</span>,<span class="str">"b"</span>,<span class="str">"c"</span>]))     <span class="cm"># a-b-c</span>
+
+<span class="cm"># ── Formatlash ──</span>
+<span class="bi">print</span>(<span class="str">"salom"</span>.center(<span class="num">20</span>, <span class="str">"*"</span>))      <span class="cm"># *******salom*******</span>
+<span class="bi">print</span>(<span class="str">"salom"</span>.ljust(<span class="num">10</span>, <span class="str">"."</span>))       <span class="cm"># salom.....</span>
+<span class="bi">print</span>(<span class="str">"salom"</span>.rjust(<span class="num">10</span>, <span class="str">"."</span>))       <span class="cm"># .....salom</span>
+<span class="bi">print</span>(<span class="str">"42"</span>.zfill(<span class="num">6</span>))                <span class="cm"># 000042</span></pre></div>
+  </div>
+
+  <div class="sub-title teal">✂️ Slicing (Kesish)</div>
+  <div class="code-block">
+    <div class="code-body"><pre><span class="var">s</span> = <span class="str">"Python dasturlash"</span>
+<span class="cm">#    0123456789...</span>
+<span class="cm">#   -18-17... -1</span>
+
+<span class="bi">print</span>(<span class="var">s</span>[<span class="num">0</span>])        <span class="cm"># P      — birinchi harf</span>
+<span class="bi">print</span>(<span class="var">s</span>[<span class="op">-</span><span class="num">1</span>])       <span class="cm"># h      — oxirgi harf</span>
+<span class="bi">print</span>(<span class="var">s</span>[<span class="num">0</span>:<span class="num">6</span>])      <span class="cm"># Python</span>
+<span class="bi">print</span>(<span class="var">s</span>[<span class="num">7</span>:])       <span class="cm"># dasturlash</span>
+<span class="bi">print</span>(<span class="var">s</span>[:<span class="num">6</span>])       <span class="cm"># Python</span>
+<span class="bi">print</span>(<span class="var">s</span>[:<span class="op">-</span><span class="num">4</span>])      <span class="cm"># Python dastur</span>
+<span class="bi">print</span>(<span class="var">s</span>[::<span class="num">2</span>])      <span class="cm"># Pto atrа  (har ikkinchi)</span>
+<span class="bi">print</span>(<span class="var">s</span>[::<span class="op">-</span><span class="num">1</span>])     <span class="cm"># hash rutraltsad nohtyP (teskari)</span>
+<span class="bi">print</span>(<span class="var">s</span>[<span class="num">7</span>:<span class="num">17</span>:<span class="num">2</span>])   <span class="cm"># datrls</span>
+
+<span class="cm"># Palindrom tekshirish</span>
+<span class="kw">def</span> <span class="fn">palindrom_mi</span>(<span class="var">s</span>):
+    <span class="var">s</span> = <span class="var">s</span>.lower().replace(<span class="str">" "</span>, <span class="str">""</span>)
+    <span class="kw">return</span> <span class="var">s</span> <span class="op">==</span> <span class="var">s</span>[::<span class="op">-</span><span class="num">1</span>]
+
+<span class="bi">print</span>(<span class="fn">palindrom_mi</span>(<span class="str">"level"</span>))   <span class="cm"># True</span>
+<span class="bi">print</span>(<span class="fn">palindrom_mi</span>(<span class="str">"racecar"</span>)) <span class="cm"># True</span></pre></div>
+  </div>
+
+  <div class="sub-title teal">🔍 Regex (Regular Expressions)</div>
+  <div class="code-block">
+    <div class="code-body"><pre><span class="kw">import</span> <span class="var">re</span>
+
+<span class="cm"># Oddiy qidirish</span>
+<span class="var">matn</span> = <span class="str">"Telefon: +998901234567, email: test@mail.uz"</span>
+
+<span class="cm"># search — birinchi topilgani</span>
+<span class="var">tel</span> = <span class="var">re</span>.search(<span class="str">r'\+\d{12}'</span>, <span class="var">matn</span>)
+<span class="kw">if</span> <span class="var">tel</span>:
+    <span class="bi">print</span>(<span class="str">f"Tel: {<span class="var">tel</span>.group()}"</span>)  <span class="cm"># +998901234567</span>
+
+<span class="cm"># findall — barchasi</span>
+<span class="var">emaillar</span> = <span class="var">re</span>.findall(<span class="str">r'\S+@\S+'</span>, <span class="var">matn</span>)
+<span class="bi">print</span>(<span class="var">emaillar</span>)  <span class="cm"># ['test@mail.uz']</span>
+
+<span class="cm"># sub — almashtirish</span>
+<span class="var">yangi</span> = <span class="var">re</span>.sub(<span class="str">r'\d'</span>, <span class="str">'*'</span>, <span class="var">matn</span>)  <span class="cm"># raqamlarni yashirish</span>
+<span class="bi">print</span>(<span class="var">yangi</span>)
+
+<span class="cm"># Foydali shablonlar</span>
+<span class="cm"># r'\d+' — raqamlar  r'\w+' — harflar/raqamlar</span>
+<span class="cm"># r'\s+' — bo'shliq  r'[A-Z]' — katta harf</span>
+<span class="cm"># r'^...' — boshidan  r'...$' — oxirida</span></pre></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     10  RO'YXATLAR
+══════════════════════════════════════ -->
+<div class="section-sep" id="lists"></div>
+<div class="section-header">
+  <div class="sh-icon">📋</div>
+  <div class="sh-text">
+    <h2>Ro'yxatlar (Lists)</h2>
+    <p>Barcha metodlar, saralash, tuple, set, deque</p>
+  </div>
+  <div class="sh-num">10</div>
+</div>
+<div class="container">
+  <div class="grid grid-2">
+    <div class="code-block">
+      <div class="code-header"><span>list_methods.py</span><span class="badge badge-blue">Barcha metodlar</span></div>
+      <div class="code-body"><pre><span class="var">r</span> = [<span class="num">3</span>, <span class="num">1</span>, <span class="num">4</span>, <span class="num">1</span>, <span class="num">5</span>, <span class="num">9</span>]
+
+<span class="cm"># ── Qo'shish ──</span>
+<span class="var">r</span>.append(<span class="num">2</span>)          <span class="cm"># oxiriga qo'shish — O(1)</span>
+<span class="var">r</span>.insert(<span class="num">0</span>, <span class="num">100</span>)     <span class="cm"># indeksga — O(n)</span>
+<span class="var">r</span>.extend([<span class="num">6</span>, <span class="num">5</span>, <span class="num">3</span>])  <span class="cm"># ro'yxat qo'shish</span>
+<span class="var">r2</span> = <span class="var">r</span> + [<span class="num">7</span>, <span class="num">8</span>]     <span class="cm"># birlashtirish (yangi)</span>
+<span class="var">r3</span> = <span class="var">r</span> * <span class="num">2</span>          <span class="cm"># ikki marta takror</span>
+
+<span class="cm"># ── O'chirish ──</span>
+<span class="var">r</span>.remove(<span class="num">1</span>)          <span class="cm"># birinchi 1 ni o'chirish</span>
+<span class="var">chiqarildi</span> = <span class="var">r</span>.pop()   <span class="cm"># oxirgisi (qaytaradi)</span>
+<span class="var">chiqarildi</span> = <span class="var">r</span>.pop(<span class="num">0</span>) <span class="cm"># 0-indeks</span>
+<span class="kw">del</span> <span class="var">r</span>[<span class="num">2</span>]             <span class="cm"># indeks bo'yicha</span>
+<span class="kw">del</span> <span class="var">r</span>[<span class="num">1</span>:<span class="num">3</span>]           <span class="cm"># oraliq</span>
+<span class="var">r</span>.clear()            <span class="cm"># barchasi</span>
+
+<span class="cm"># ── Ma'lumot ──</span>
+<span class="bi">print</span>(<span class="var">r</span>.count(<span class="num">1</span>))    <span class="cm"># 1 soni necha marta</span>
+<span class="bi">print</span>(<span class="var">r</span>.index(<span class="num">5</span>))    <span class="cm"># 5 qaysi indeksda</span>
+<span class="bi">print</span>(<span class="bi">len</span>(<span class="var">r</span>))        <span class="cm"># uzunlik</span>
+<span class="bi">print</span>(<span class="num">9</span> <span class="kw">in</span> <span class="var">r</span>)        <span class="cm"># mavjudlik</span>
+
+<span class="cm"># ── O'zgartirish ──</span>
+<span class="var">r</span>.sort()             <span class="cm"># o'sish</span>
+<span class="var">r</span>.sort(<span class="var">reverse</span>=<span class="kw">True</span>) <span class="cm"># kamayish</span>
+<span class="var">r</span>.sort(<span class="var">key</span>=<span class="bi">abs</span>)      <span class="cm"># mutlaq qiymat bo'yicha</span>
+<span class="var">r</span>.reverse()          <span class="cm"># teskari</span>
+<span class="var">r_copy</span> = <span class="var">r</span>.copy()   <span class="cm"># nusxa (shallow)</span></pre></div>
+    </div>
+    <div class="code-block">
+      <div class="code-header"><span>tuple_set.py</span><span class="badge badge-yellow">Tuple & Set</span></div>
+      <div class="code-body"><pre><span class="cm"># ── TUPLE — o'zgartirilmaydigan list ──</span>
+<span class="var">koordinat</span> = (<span class="num">41.2995</span>, <span class="num">69.2401</span>)
+<span class="var">rgb</span> = (<span class="num">255</span>, <span class="num">128</span>, <span class="num">0</span>)
+<span class="var">bir_element</span> = (<span class="num">42</span>,)  <span class="cm"># vergul shart!</span>
+
+<span class="cm"># Tuple unpacking</span>
+<span class="var">lat</span>, <span class="var">lon</span> = <span class="var">koordinat</span>
+<span class="var">r</span>, <span class="var">g</span>, <span class="var">b</span> = <span class="var">rgb</span>
+
+<span class="cm"># Named tuple</span>
+<span class="kw">from</span> <span class="var">collections</span> <span class="kw">import</span> <span class="cls">namedtuple</span>
+<span class="cls">Nuqta</span> = <span class="cls">namedtuple</span>(<span class="str">'Nuqta'</span>, [<span class="str">'x'</span>, <span class="str">'y'</span>])
+<span class="var">p</span> = <span class="cls">Nuqta</span>(<span class="num">3</span>, <span class="num">4</span>)
+<span class="bi">print</span>(<span class="var">p</span>.x, <span class="var">p</span>.y)  <span class="cm"># 3 4</span>
+
+<span class="cm"># ── SET — takrorlanmas elementlar ──</span>
+<span class="var">a</span> = {<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>}
+<span class="var">b</span> = {<span class="num">4</span>, <span class="num">5</span>, <span class="num">6</span>, <span class="num">7</span>, <span class="num">8</span>}
+
+<span class="bi">print</span>(<span class="var">a</span> | <span class="var">b</span>)    <span class="cm"># Birlashma: {1..8}</span>
+<span class="bi">print</span>(<span class="var">a</span> & <span class="var">b</span>)    <span class="cm"># Kesishma: {4,5}</span>
+<span class="bi">print</span>(<span class="var">a</span> - <span class="var">b</span>)    <span class="cm"># Ayirma: {1,2,3}</span>
+<span class="bi">print</span>(<span class="var">a</span> ^ <span class="var">b</span>)    <span class="cm"># Simmetrik: {1,2,3,6,7,8}</span>
+
+<span class="cm"># Takrorlarni olib tashlash</span>
+<span class="var">r</span> = [<span class="num">1</span>,<span class="num">2</span>,<span class="num">2</span>,<span class="num">3</span>,<span class="num">3</span>,<span class="num">3</span>,<span class="num">4</span>]
+<span class="var">unique</span> = <span class="bi">list</span>(<span class="bi">set</span>(<span class="var">r</span>))  <span class="cm"># [1,2,3,4]</span></pre></div>
+    </div>
+  </div>
+
+  <div class="sub-title">📊 Saralash algoritmlari</div>
+  <div class="code-block">
+    <div class="code-body"><pre><span class="cm"># sorted() — yangi ro'yxat qaytaradi, asl o'zgarmaydi</span>
+<span class="var">r</span> = [<span class="num">5</span>, <span class="num">2</span>, <span class="num">8</span>, <span class="num">1</span>, <span class="num">9</span>, <span class="num">3</span>]
+<span class="var">yangi</span> = <span class="bi">sorted</span>(<span class="var">r</span>)             <span class="cm"># [1,2,3,5,8,9]</span>
+<span class="var">teskari</span> = <span class="bi">sorted</span>(<span class="var">r</span>, <span class="var">reverse</span>=<span class="kw">True</span>)
+
+<span class="cm"># Murakkab saralash</span>
+<span class="var">talabalar</span> = [
+    {<span class="str">"ism"</span>: <span class="str">"Ali"</span>, <span class="str">"ball"</span>: <span class="num">95</span>, <span class="str">"yosh"</span>: <span class="num">22</span>},
+    {<span class="str">"ism"</span>: <span class="str">"Vali"</span>, <span class="str">"ball"</span>: <span class="num">87</span>, <span class="str">"yosh"</span>: <span class="num">20</span>},
+    {<span class="str">"ism"</span>: <span class="str">"Kamol"</span>, <span class="str">"ball"</span>: <span class="num">95</span>, <span class="str">"yosh"</span>: <span class="num">21</span>},
+]
+<span class="cm"># Ball bo'yicha kamayish, keyin yosh bo'yicha o'sish</span>
+<span class="var">saralangan</span> = <span class="bi">sorted</span>(<span class="var">talabalar</span>, <span class="var">key</span>=<span class="kw">lambda</span> <span class="var">x</span>: (<span class="op">-</span><span class="var">x</span>[<span class="str">"ball"</span>], <span class="var">x</span>[<span class="str">"yosh"</span>]))
+<span class="kw">for</span> <span class="var">t</span> <span class="kw">in</span> <span class="var">saralangan</span>:
+    <span class="bi">print</span>(<span class="str">f"{<span class="var">t</span>['ism']}: {<span class="var">t</span>['ball']} ball, {<span class="var">t</span>['yosh']} yosh"</span>)</pre></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     11  LUG'ATLAR
+══════════════════════════════════════ -->
+<div class="section-sep" id="dicts"></div>
+<div class="section-header green">
+  <div class="sh-icon">📚</div>
+  <div class="sh-text">
+    <h2>Lug'atlar (Dictionaries)</h2>
+    <p>Kalit-qiymat juftliklari, barcha metodlar, defaultdict, Counter</p>
+  </div>
+  <div class="sh-num">11</div>
+</div>
+<div class="container">
+  <div class="code-block">
+    <div class="code-header"><span>dict_full.py</span><span class="badge badge-blue">To'liq qo'llanma</span></div>
+    <div class="code-body"><pre><span class="cm"># Yaratish usullari</span>
+<span class="var">d1</span> = {<span class="str">"ism"</span>: <span class="str">"Ali"</span>, <span class="str">"yosh"</span>: <span class="num">25</span>}
+<span class="var">d2</span> = <span class="bi">dict</span>(<span class="var">ism</span>=<span class="str">"Ali"</span>, <span class="var">yosh</span>=<span class="num">25</span>)
+<span class="var">d3</span> = <span class="bi">dict</span>.<span class="fn">fromkeys</span>([<span class="str">"a"</span>,<span class="str">"b"</span>,<span class="str">"c"</span>], <span class="num">0</span>)  <span class="cm"># {'a':0,'b':0,'c':0}</span>
+
+<span class="cm"># Kirish</span>
+<span class="bi">print</span>(<span class="var">d1</span>[<span class="str">"ism"</span>])                 <span class="cm"># Ali (KeyError agar yo'q)</span>
+<span class="bi">print</span>(<span class="var">d1</span>.get(<span class="str">"telefon"</span>, <span class="str">"N/A"</span>))  <span class="cm"># N/A (xatoliksiz)</span>
+<span class="bi">print</span>(<span class="var">d1</span>.setdefault(<span class="str">"shahar"</span>, <span class="str">"Toshkent"</span>))  <span class="cm"># qo'shib qaytaradi</span>
+
+<span class="cm"># O'zgartirish</span>
+<span class="var">d1</span>[<span class="str">"yosh"</span>] = <span class="num">26</span>
+<span class="var">d1</span>.update({<span class="str">"email"</span>: <span class="str">"ali@uz"</span>, <span class="str">"tel"</span>: <span class="str">"+998..."</span>})
+<span class="var">d1</span>.update(<span class="var">shahar</span>=<span class="str">"Samarqand"</span>)
+
+<span class="cm"># O'chirish</span>
+<span class="kw">del</span> <span class="var">d1</span>[<span class="str">"tel"</span>]
+<span class="var">chiqarildi</span> = <span class="var">d1</span>.pop(<span class="str">"email"</span>)         <span class="cm"># qaytaradi</span>
+<span class="var">k</span>, <span class="var">v</span> = <span class="var">d1</span>.popitem()                   <span class="cm"># oxirgi juftlik</span>
+
+<span class="cm"># Metodlar</span>
+<span class="bi">print</span>(<span class="bi">list</span>(<span class="var">d1</span>.keys()))    <span class="cm"># kalit ro'yxati</span>
+<span class="bi">print</span>(<span class="bi">list</span>(<span class="var">d1</span>.values()))  <span class="cm"># qiymat ro'yxati</span>
+<span class="bi">print</span>(<span class="bi">list</span>(<span class="var">d1</span>.items()))   <span class="cm"># juftliklar</span>
+<span class="bi">print</span>(<span class="str">"ism"</span> <span class="kw">in</span> <span class="var">d1</span>)       <span class="cm"># True</span>
+<span class="bi">print</span>(<span class="bi">len</span>(<span class="var">d1</span>))            <span class="cm"># uzunlik</span>
+
+<span class="cm"># Birlashtirilgan dict (Python 3.9+)</span>
+<span class="var">a</span> = {<span class="str">"x"</span>: <span class="num">1</span>}; <span class="var">b</span> = {<span class="str">"y"</span>: <span class="num">2</span>}
+<span class="var">c</span> = <span class="var">a</span> | <span class="var">b</span>   <span class="cm"># {'x':1, 'y':2}</span></pre></div>
+  </div>
+
+  <div class="grid grid-2" style="margin-top:1rem">
+    <div class="code-block">
+      <div class="code-header"><span>defaultdict_counter.py</span><span class="badge badge-purple">collections</span></div>
+      <div class="code-body"><pre><span class="kw">from</span> <span class="var">collections</span> <span class="kw">import</span> <span class="cls">defaultdict</span>, <span class="cls">Counter</span>
+
+<span class="cm"># defaultdict — yo'q kalit xato bermaydi</span>
+<span class="var">sozlar_soni</span> = <span class="cls">defaultdict</span>(<span class="bi">int</span>)
+<span class="var">matn</span> = <span class="str">"python python dastur kod python"</span>
+<span class="kw">for</span> <span class="var">soz</span> <span class="kw">in</span> <span class="var">matn</span>.split():
+    <span class="var">sozlar_soni</span>[<span class="var">soz</span>] <span class="op">+=</span> <span class="num">1</span>
+<span class="bi">print</span>(<span class="bi">dict</span>(<span class="var">sozlar_soni</span>))
+<span class="cm"># {'python':3, 'dastur':1, 'kod':1}</span>
+
+<span class="cm"># Counter — hisoblash uchun</span>
+<span class="var">c</span> = <span class="cls">Counter</span>(<span class="str">"mississippi"</span>)
+<span class="bi">print</span>(<span class="var">c</span>)  <span class="cm"># Counter({'i':4,'s':4,'p':2,'m':1})</span>
+<span class="bi">print</span>(<span class="var">c</span>.most_common(<span class="num">3</span>))  <span class="cm"># top 3</span>
+<span class="bi">print</span>(<span class="var">c</span>[<span class="str">'s'</span>])            <span class="cm"># 4</span></pre></div>
+    </div>
+    <div class="code-block">
+      <div class="code-header"><span>nested_dict.py</span><span class="badge badge-yellow">Ichma-ich</span></div>
+      <div class="code-body"><pre><span class="cm"># Murakkab tuzilma</span>
+<span class="var">maktab</span> = {
+    <span class="str">"9-sinf"</span>: {
+        <span class="str">"talabalar"</span>: [<span class="str">"Ali"</span>, <span class="str">"Vali"</span>],
+        <span class="str">"o'qituvchi"</span>: <span class="str">"Kamolov"</span>,
+        <span class="str">"o'rtacha_ball"</span>: <span class="num">87.5</span>
+    },
+    <span class="str">"10-sinf"</span>: {
+        <span class="str">"talabalar"</span>: [<span class="str">"Kamol"</span>, <span class="str">"Sarvar"</span>],
+        <span class="str">"o'qituvchi"</span>: <span class="str">"Rahimov"</span>,
+        <span class="str">"o'rtacha_ball"</span>: <span class="num">91.2</span>
+    }
+}
+
+<span class="cm"># Kirish</span>
+<span class="bi">print</span>(<span class="var">maktab</span>[<span class="str">"9-sinf"</span>][<span class="str">"o'qituvchi"</span>])
+<span class="bi">print</span>(<span class="var">maktab</span>[<span class="str">"10-sinf"</span>][<span class="str">"talabalar"</span>][<span class="num">0</span>])
+
+<span class="cm"># Barcha sinflar haqida</span>
+<span class="kw">for</span> <span class="var">sinf</span>, <span class="var">ma</span> <span class="kw">in</span> <span class="var">maktab</span>.items():
+    <span class="bi">print</span>(<span class="str">f"{<span class="var">sinf</span>}: {<span class="var">ma</span>['o'rtacha_ball']}"</span>)</pre></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     12  OOP
+══════════════════════════════════════ -->
+<div class="section-sep" id="oop"></div>
+<div class="section-header purple">
+  <div class="sh-icon">🏗️</div>
+  <div class="sh-text">
+    <h2>OOP — Ob'ektga yo'naltirilgan dasturlash</h2>
+    <p>Class, ob'ekt, merosxo'rlik, encapsulation, polymorphism, dunder metodlar</p>
+  </div>
+  <div class="sh-num">12</div>
+</div>
+<div class="container">
+  <div class="code-block">
+    <div class="code-header"><span>oop_asoslar.py</span><span class="badge badge-purple">To'liq namuna</span></div>
+    <div class="code-body"><pre><span class="kw">class</span> <span class="cls">BankHisobi</span>:
+    <span class="cm">"""Bank hisobini ifodalovchi class."""</span>
+
+    <span class="cm"># Class o'zgaruvchisi — barcha ob'ektlar uchun umumiy</span>
+    <span class="var">foiz_stavkasi</span> = <span class="num">0.12</span>
+    <span class="var">hisoblar_soni</span> = <span class="num">0</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="var">self</span>, <span class="var">egasi</span>, <span class="var">boshlangich_balans</span>=<span class="num">0</span>):
+        <span class="cm"># Instance o'zgaruvchilar</span>
+        <span class="var">self</span>.<span class="var">egasi</span> = <span class="var">egasi</span>
+        <span class="var">self</span>.<span class="var">_balans</span> = <span class="var">boshlangich_balans</span>  <span class="cm"># _ = "himoyalangan"</span>
+        <span class="var">self</span>.<span class="var">_operatsiyalar</span> = []
+        <span class="cls">BankHisobi</span>.<span class="var">hisoblar_soni</span> += <span class="num">1</span>
+
+    <span class="cm"># Property — private o'zgaruvchiga xavfsiz kirish</span>
+    <span class="kw">@property</span>
+    <span class="kw">def</span> <span class="fn">balans</span>(<span class="var">self</span>):
+        <span class="kw">return</span> <span class="var">self</span>.<span class="var">_balans</span>
+
+    <span class="kw">def</span> <span class="fn">depozit</span>(<span class="var">self</span>, <span class="var">summa</span>):
+        <span class="kw">if</span> <span class="var">summa</span> <span class="op">&lt;=</span> <span class="num">0</span>:
+            <span class="kw">raise</span> <span class="cls">ValueError</span>(<span class="str">"Summa musbat bo'lishi kerak"</span>)
+        <span class="var">self</span>.<span class="var">_balans</span> <span class="op">+=</span> <span class="var">summa</span>
+        <span class="var">self</span>.<span class="var">_operatsiyalar</span>.append(<span class="str">f"+{<span class="var">summa</span>:,.0f}"</span>)
+        <span class="kw">return</span> <span class="var">self</span>  <span class="cm"># method chaining uchun</span>
+
+    <span class="kw">def</span> <span class="fn">yechish</span>(<span class="var">self</span>, <span class="var">summa</span>):
+        <span class="kw">if</span> <span class="var">summa</span> <span class="op">&gt;</span> <span class="var">self</span>.<span class="var">_balans</span>:
+            <span class="kw">raise</span> <span class="cls">ValueError</span>(<span class="str">"Balans yetarli emas"</span>)
+        <span class="var">self</span>.<span class="var">_balans</span> <span class="op">-=</span> <span class="var">summa</span>
+        <span class="var">self</span>.<span class="var">_operatsiyalar</span>.append(<span class="str">f"-{<span class="var">summa</span>:,.0f}"</span>)
+        <span class="kw">return</span> <span class="var">self</span>
+
+    <span class="kw">def</span> <span class="fn">oylik_foiz</span>(<span class="var">self</span>):
+        <span class="var">foiz</span> = <span class="var">self</span>.<span class="var">_balans</span> * <span class="cls">BankHisobi</span>.<span class="var">foiz_stavkasi</span> / <span class="num">12</span>
+        <span class="var">self</span>.<span class="var">_balans</span> <span class="op">+=</span> <span class="var">foiz</span>
+        <span class="kw">return</span> <span class="var">foiz</span>
+
+    <span class="cm"># Dunder metodlar</span>
+    <span class="kw">def</span> <span class="fn">__str__</span>(<span class="var">self</span>):
+        <span class="kw">return</span> <span class="str">f"Hisob({<span class="var">self</span>.<span class="var">egasi</span>}: {<span class="var">self</span>.<span class="var">_balans</span>:,.0f} so'm)"</span>
+
+    <span class="kw">def</span> <span class="fn">__repr__</span>(<span class="var">self</span>):
+        <span class="kw">return</span> <span class="str">f"BankHisobi('{<span class="var">self</span>.<span class="var">egasi</span>}', {<span class="var">self</span>.<span class="var">_balans</span>})"</span>
+
+    <span class="kw">def</span> <span class="fn">__lt__</span>(<span class="var">self</span>, <span class="var">other</span>):  <span class="cm"># &lt; operatori</span>
+        <span class="kw">return</span> <span class="var">self</span>.<span class="var">_balans</span> <span class="op">&lt;</span> <span class="var">other</span>.<span class="var">_balans</span>
+
+
+<span class="cm"># Ishlatish</span>
+<span class="var">ali</span> = <span class="cls">BankHisobi</span>(<span class="str">"Ali"</span>, <span class="num">1_000_000</span>)
+<span class="var">ali</span>.<span class="fn">depozit</span>(<span class="num">500_000</span>).<span class="fn">depozit</span>(<span class="num">200_000</span>).<span class="fn">yechish</span>(<span class="num">100_000</span>)  <span class="cm"># chaining</span>
+<span class="bi">print</span>(<span class="var">ali</span>)  <span class="cm"># Hisob(Ali: 1,600,000 so'm)</span></pre></div>
+  </div>
+
+  <div class="sub-title purple">🧬 Merosxo'rlik va Polimorfizm</div>
+  <div class="code-block">
+    <div class="code-body"><pre><span class="kw">class</span> <span class="cls">Hayvon</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="var">self</span>, <span class="var">ism</span>, <span class="var">yosh</span>):
+        <span class="var">self</span>.<span class="var">ism</span> = <span class="var">ism</span>
+        <span class="var">self</span>.<span class="var">yosh</span> = <span class="var">yosh</span>
+
+    <span class="kw">def</span> <span class="fn">ovoz</span>(<span class="var">self</span>):
+        <span class="kw">raise</span> <span class="cls">NotImplementedError</span>(<span class="str">"Subclass belgilashi kerak"</span>)
+
+    <span class="kw">def</span> <span class="fn">tavsif</span>(<span class="var">self</span>):
+        <span class="bi">print</span>(<span class="str">f"{<span class="var">self</span>.<span class="var">ism</span>} ({<span class="var">self</span>.<span class="var">yosh</span>} yosh): {<span class="var">self</span>.<span class="fn">ovoz</span>()}"</span>)
+
+
+<span class="kw">class</span> <span class="cls">It</span>(<span class="cls">Hayvon</span>):
+    <span class="kw">def</span> <span class="fn">ovoz</span>(<span class="var">self</span>):
+        <span class="kw">return</span> <span class="str">"Vov-vov! 🐕"</span>
+
+
+<span class="kw">class</span> <span class="cls">Mushuk</span>(<span class="cls">Hayvon</span>):
+    <span class="kw">def</span> <span class="fn">ovoz</span>(<span class="var">self</span>):
+        <span class="kw">return</span> <span class="str">"Miyov! 🐱"</span>
+
+
+<span class="kw">class</span> <span class="cls">Papagay</span>(<span class="cls">Hayvon</span>):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="var">self</span>, <span class="var">ism</span>, <span class="var">yosh</span>, <span class="var">gaplar</span>):
+        <span class="bi">super</span>().<span class="fn">__init__</span>(<span class="var">ism</span>, <span class="var">yosh</span>)
+        <span class="var">self</span>.<span class="var">gaplar</span> = <span class="var">gaplar</span>
+
+    <span class="kw">def</span> <span class="fn">ovoz</span>(<span class="var">self</span>):
+        <span class="kw">return</span> <span class="str">f"'{<span class="var">self</span>.<span class="var">gaplar</span>}' 🦜"</span>
+
+
+<span class="cm"># Polimorfizm — bir xil interfeys, turli xulq</span>
+<span class="var">hayvonlar</span> = [
+    <span class="cls">It</span>(<span class="str">"Rex"</span>, <span class="num">3</span>),
+    <span class="cls">Mushuk</span>(<span class="str">"Pushti"</span>, <span class="num">2</span>),
+    <span class="cls">Papagay</span>(<span class="str">"Kesha"</span>, <span class="num">5</span>, <span class="str">"Privyet!"</span>)
+]
+<span class="kw">for</span> <span class="var">h</span> <span class="kw">in</span> <span class="var">hayvonlar</span>:
+    <span class="var">h</span>.<span class="fn">tavsif</span>()</pre></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     13  FAYLLAR
+══════════════════════════════════════ -->
+<div class="section-sep" id="files"></div>
+<div class="section-header orange">
+  <div class="sh-icon">📁</div>
+  <div class="sh-text">
+    <h2>Fayllar bilan ishlash</h2>
+    <p>Matn, JSON, CSV fayllarni o'qish, yozish va os moduli</p>
+  </div>
+  <div class="sh-num">13</div>
+</div>
+<div class="container">
+  <div class="grid grid-2">
+    <div class="code-block">
+      <div class="code-header"><span>files.py</span></div>
+      <div class="code-body"><pre><span class="cm"># ── Fayl rejimlar ──</span>
+<span class="cm"># 'r'  — o'qish (default)</span>
+<span class="cm"># 'w'  — yozish (mavjud bo'lsa o'chiradi)</span>
+<span class="cm"># 'a'  — qo'shib yozish</span>
+<span class="cm"># 'x'  — yangi yaratish (mavjud bo'lsa xato)</span>
+<span class="cm"># 'b'  — binary rejim (rb, wb)</span>
+<span class="cm"># '+'  — o'qish+yozish (r+, w+)</span>
+
+<span class="cm"># Yozish</span>
+<span class="kw">with</span> <span class="bi">open</span>(<span class="str">"talabalar.txt"</span>, <span class="str">"w"</span>, <span class="var">encoding</span>=<span class="str">"utf-8"</span>) <span class="kw">as</span> <span class="var">f</span>:
+    <span class="var">f</span>.write(<span class="str">"Ali Karimov - 95\n"</span>)
+    <span class="var">f</span>.write(<span class="str">"Vali Rahimov - 87\n"</span>)
+    <span class="var">f</span>.writelines([<span class="str">"Kamol Toshev - 92\n"</span>, <span class="str">"Sara Aliyeva - 98\n"</span>])
+
+<span class="cm"># O'qish — butun fayl</span>
+<span class="kw">with</span> <span class="bi">open</span>(<span class="str">"talabalar.txt"</span>, <span class="str">"r"</span>, <span class="var">encoding</span>=<span class="str">"utf-8"</span>) <span class="kw">as</span> <span class="var">f</span>:
+    <span class="var">matn</span> = <span class="var">f</span>.read()
+    <span class="bi">print</span>(<span class="var">matn</span>)
+
+<span class="cm"># Qator-qator o'qish</span>
+<span class="kw">with</span> <span class="bi">open</span>(<span class="str">"talabalar.txt"</span>, <span class="str">"r"</span>, <span class="var">encoding</span>=<span class="str">"utf-8"</span>) <span class="kw">as</span> <span class="var">f</span>:
+    <span class="var">qatorlar</span> = <span class="var">f</span>.readlines()  <span class="cm"># ro'yxat</span>
+    <span class="kw">for</span> <span class="var">q</span> <span class="kw">in</span> <span class="var">qatorlar</span>:
+        <span class="bi">print</span>(<span class="var">q</span>.strip())
+
+<span class="cm"># Katta fayllar uchun — memory efficient</span>
+<span class="kw">with</span> <span class="bi">open</span>(<span class="str">"katta_fayl.txt"</span>) <span class="kw">as</span> <span class="var">f</span>:
+    <span class="kw">for</span> <span class="var">qator</span> <span class="kw">in</span> <span class="var">f</span>:  <span class="cm"># bir-bir o'qiydi</span>
+        <span class="bi">print</span>(<span class="var">qator</span>.strip())</pre></div>
+    </div>
+    <div>
+      <div class="code-block">
+        <div class="code-header"><span>json_csv.py</span></div>
+        <div class="code-body"><pre><span class="kw">import</span> <span class="var">json</span>, <span class="var">csv</span>
+
+<span class="cm"># ── JSON ──</span>
+<span class="var">data</span> = {<span class="str">"talabalar"</span>: [
+    {<span class="str">"ism"</span>: <span class="str">"Ali"</span>, <span class="str">"ball"</span>: <span class="num">95</span>},
+    {<span class="str">"ism"</span>: <span class="str">"Vali"</span>, <span class="str">"ball"</span>: <span class="num">87</span>}
+]}
+
+<span class="kw">with</span> <span class="bi">open</span>(<span class="str">"data.json"</span>, <span class="str">"w"</span>) <span class="kw">as</span> <span class="var">f</span>:
+    <span class="var">json</span>.dump(<span class="var">data</span>, <span class="var">f</span>, <span class="var">ensure_ascii</span>=<span class="kw">False</span>, <span class="var">indent</span>=<span class="num">2</span>)
+
+<span class="kw">with</span> <span class="bi">open</span>(<span class="str">"data.json"</span>) <span class="kw">as</span> <span class="var">f</span>:
+    <span class="var">yuklangan</span> = <span class="var">json</span>.load(<span class="var">f</span>)
+
+<span class="cm"># ── CSV ──</span>
+<span class="var">qatorlar</span> = [(<span class="str">"Ali"</span>,<span class="num">95</span>), (<span class="str">"Vali"</span>,<span class="num">87</span>)]
+
+<span class="kw">with</span> <span class="bi">open</span>(<span class="str">"hisobot.csv"</span>, <span class="str">"w"</span>, <span class="var">newline</span>=<span class="str">""</span>) <span class="kw">as</span> <span class="var">f</span>:
+    <span class="var">w</span> = <span class="var">csv</span>.writer(<span class="var">f</span>)
+    <span class="var">w</span>.writerow([<span class="str">"Ism"</span>, <span class="str">"Ball"</span>])  <span class="cm"># sarlavha</span>
+    <span class="var">w</span>.writerows(<span class="var">qatorlar</span>)
+
+<span class="kw">with</span> <span class="bi">open</span>(<span class="str">"hisobot.csv"</span>) <span class="kw">as</span> <span class="var">f</span>:
+    <span class="kw">for</span> <span class="var">q</span> <span class="kw">in</span> <span class="var">csv</span>.DictReader(<span class="var">f</span>):
+        <span class="bi">print</span>(<span class="var">q</span>)  <span class="cm"># {'Ism':'Ali','Ball':'95'}</span></pre></div>
+      </div>
+      <div class="code-block" style="margin-top:0.75rem">
+        <div class="code-header"><span>pathlib.py</span><span class="badge badge-green">Zamonaviy</span></div>
+        <div class="code-body"><pre><span class="kw">from</span> <span class="var">pathlib</span> <span class="kw">import</span> <span class="cls">Path</span>
+
+<span class="var">p</span> = <span class="cls">Path</span>(<span class="str">"."</span>)                    <span class="cm"># joriy papka</span>
+<span class="bi">print</span>(<span class="bi">list</span>(<span class="var">p</span>.iterdir()))         <span class="cm"># ichidagilar</span>
+<span class="bi">print</span>(<span class="bi">list</span>(<span class="var">p</span>.glob(<span class="str">"*.py"</span>)))     <span class="cm"># .py fayllar</span>
+<span class="bi">print</span>(<span class="bi">list</span>(<span class="var">p</span>.rglob(<span class="str">"*.py"</span>)))    <span class="cm"># rekursiv</span>
+
+<span class="var">f</span> = <span class="cls">Path</span>(<span class="str">"fayl.txt"</span>)
+<span class="bi">print</span>(<span class="var">f</span>.exists())               <span class="cm"># mavjudmi?</span>
+<span class="bi">print</span>(<span class="var">f</span>.stem)                   <span class="cm"># "fayl"</span>
+<span class="bi">print</span>(<span class="var">f</span>.suffix)                 <span class="cm"># ".txt"</span>
+<span class="bi">print</span>(<span class="var">f</span>.parent)                 <span class="cm"># yuqori papka</span>
+<span class="var">f</span>.write_text(<span class="str">"Salom!"</span>)
+<span class="bi">print</span>(<span class="var">f</span>.read_text())</pre></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     14  XATOLAR
+══════════════════════════════════════ -->
+<div class="section-sep" id="exceptions"></div>
+<div class="section-header red">
+  <div class="sh-icon">🛡️</div>
+  <div class="sh-text">
+    <h2>Xatolarni boshqarish</h2>
+    <p>try-except-else-finally, o'z xatolar yaratish, logging</p>
+  </div>
+  <div class="sh-num">14</div>
+</div>
+<div class="container">
+  <div class="grid grid-2">
+    <div class="code-block">
+      <div class="code-header"><span>exceptions_full.py</span><span class="badge badge-red">Muhim!</span></div>
+      <div class="code-body"><pre><span class="cm"># To'liq try-except tuzilmasi</span>
+<span class="kw">try</span>:
+    <span class="var">son</span> = <span class="bi">int</span>(<span class="bi">input</span>(<span class="str">"Son kiriting: "</span>))
+    <span class="var">natija</span> = <span class="num">100</span> <span class="op">/</span> <span class="var">son</span>
+    <span class="bi">print</span>(<span class="str">f"Natija: {<span class="var">natija</span>:.2f}"</span>)
+
+<span class="kw">except</span> <span class="cls">ValueError</span> <span class="kw">as</span> <span class="var">e</span>:
+    <span class="bi">print</span>(<span class="str">f"ValueError: {<span class="var">e</span>}"</span>)
+
+<span class="kw">except</span> <span class="cls">ZeroDivisionError</span>:
+    <span class="bi">print</span>(<span class="str">"Nolga bo'lib bo'lmaydi!"</span>)
+
+<span class="kw">except</span> (<span class="cls">TypeError</span>, <span class="cls">OverflowError</span>) <span class="kw">as</span> <span class="var">e</span>:
+    <span class="bi">print</span>(<span class="str">f"Tur/Overflow xatosi: {<span class="var">e</span>}"</span>)
+
+<span class="kw">except</span> <span class="cls">Exception</span> <span class="kw">as</span> <span class="var">e</span>:
+    <span class="bi">print</span>(<span class="str">f"Kutilmagan xato: {<span class="bi">type</span>(<span class="var">e</span>).__name__}: {<span class="var">e</span>}"</span>)
+
+<span class="kw">else</span>:
+    <span class="cm"># Xato bo'lmagan holda</span>
+    <span class="bi">print</span>(<span class="str">"Hamma narsa yaxshi ishadi! ✅"</span>)
+
+<span class="kw">finally</span>:
+    <span class="cm"># Har doim ishlaydi (xato bo'lsa ham)</span>
+    <span class="bi">print</span>(<span class="str">"Bu blok har doim ishlaydi."</span>)
+    <span class="cm"># Fayllar yopish, ulanishlar uzish uchun</span></pre></div>
+    </div>
+    <div>
+      <div class="code-block">
+        <div class="code-header"><span>custom_exceptions.py</span><span class="badge badge-yellow">O'z xatolar</span></div>
+        <div class="code-body"><pre><span class="cm"># O'z exception yaratish</span>
+<span class="kw">class</span> <span class="cls">AppXatosi</span>(<span class="cls">Exception</span>):
+    <span class="str">"""Ilova asosiy xatosi."""</span>
+    <span class="kw">pass</span>
+
+<span class="kw">class</span> <span class="cls">YoshXatosi</span>(<span class="cls">AppXatosi</span>):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="var">self</span>, <span class="var">yosh</span>, <span class="var">min_yosh</span>=<span class="num">18</span>):
+        <span class="var">self</span>.<span class="var">yosh</span> = <span class="var">yosh</span>
+        <span class="var">self</span>.<span class="var">min_yosh</span> = <span class="var">min_yosh</span>
+        <span class="bi">super</span>().<span class="fn">__init__</span>(
+            <span class="str">f"Yosh {<span class="var">yosh</span>} — {<span class="var">min_yosh</span>} dan kichik!"</span>)
+
+<span class="kw">class</span> <span class="cls">BalansXatosi</span>(<span class="cls">AppXatosi</span>):
+    <span class="kw">pass</span>
+
+<span class="kw">def</span> <span class="fn">ro'yxatdan_o'tish</span>(<span class="var">ism</span>, <span class="var">yosh</span>):
+    <span class="kw">if</span> <span class="kw">not</span> <span class="var">ism</span>.strip():
+        <span class="kw">raise</span> <span class="cls">ValueError</span>(<span class="str">"Ism bo'sh bo'lmasin"</span>)
+    <span class="kw">if</span> <span class="var">yosh</span> <span class="op">&lt;</span> <span class="num">18</span>:
+        <span class="kw">raise</span> <span class="cls">YoshXatosi</span>(<span class="var">yosh</span>)
+    <span class="kw">return</span> <span class="str">f"Salom {<span class="var">ism</span>}!"</span>
+
+<span class="kw">try</span>:
+    <span class="fn">ro'yxatdan_o'tish</span>(<span class="str">"Ali"</span>, <span class="num">15</span>)
+<span class="kw">except</span> <span class="cls">YoshXatosi</span> <span class="kw">as</span> <span class="var">e</span>:
+    <span class="bi">print</span>(<span class="str">f"Xato: {<span class="var">e</span>}"</span>)</pre></div>
+      </div>
+      <div class="info-box warn" style="margin-top:0.75rem">
+        <h4>⚠️ Context Manager (with)</h4>
+        <p><code>with</code> ifodasi fayllar, ulanishlar va resurslarni avtomatik yopadi. <code>__enter__</code> va <code>__exit__</code> metodlari orqali o'z context manager ham yaratish mumkin.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="tbl-wrap" style="margin-top:1rem">
+    <table>
+      <tr><th>Xato nomi</th><th>Sababi</th><th>Misol</th></tr>
+      <tr><td><code style="color:var(--red)">SyntaxError</code></td><td>Noto'g'ri sintaksis</td><td><code>if x</code> (ikki nuqtasiz)</td></tr>
+      <tr><td><code style="color:var(--red)">NameError</code></td><td>Aniqlanmagan o'zgaruvchi</td><td><code>print(y)</code> (y yo'q)</td></tr>
+      <tr><td><code style="color:var(--red)">TypeError</code></td><td>Noto'g'ri tur</td><td><code>"5" + 5</code></td></tr>
+      <tr><td><code style="color:var(--red)">ValueError</code></td><td>Noto'g'ri qiymat</td><td><code>int("abc")</code></td></tr>
+      <tr><td><code style="color:var(--red)">IndexError</code></td><td>Yo'q indeks</td><td><code>[1,2][5]</code></td></tr>
+      <tr><td><code style="color:var(--red)">KeyError</code></td><td>Yo'q kalit</td><td><code>{"a":1}["b"]</code></td></tr>
+      <tr><td><code style="color:var(--red)">AttributeError</code></td><td>Yo'q atribut</td><td><code>"salom".push()</code></td></tr>
+      <tr><td><code style="color:var(--red)">FileNotFoundError</code></td><td>Fayl topilmadi</td><td><code>open("yoq.txt")</code></td></tr>
+      <tr><td><code style="color:var(--red)">ZeroDivisionError</code></td><td>Nolga bo'lish</td><td><code>10 / 0</code></td></tr>
+      <tr><td><code style="color:var(--red)">ImportError</code></td><td>Modul topilmadi</td><td><code>import noma_lum</code></td></tr>
+      <tr><td><code style="color:var(--red)">RecursionError</code></td><td>Chuqur rekursiya</td><td>Cheksiz rekursiya</td></tr>
+      <tr><td><code style="color:var(--red)">MemoryError</code></td><td>Xotira yetarli emas</td><td>Juda katta ro'yxat</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     15  MODULLAR
+══════════════════════════════════════ -->
+<div class="section-sep" id="modules"></div>
+<div class="section-header teal">
+  <div class="sh-icon">📦</div>
+  <div class="sh-text">
+    <h2>Modullar va kutubxonalar</h2>
+    <p>import, standart kutubxona, pip, virtual muhit, mashhur paketlar</p>
+  </div>
+  <div class="sh-num">15</div>
+</div>
+<div class="container">
+  <div class="grid grid-2">
+    <div class="code-block">
+      <div class="code-header"><span>import_usullari.py</span></div>
+      <div class="code-body"><pre><span class="cm"># 1. To'liq import</span>
+<span class="kw">import</span> <span class="var">math</span>
+<span class="bi">print</span>(<span class="var">math</span>.pi)
+
+<span class="cm"># 2. Taxallus bilan</span>
+<span class="kw">import</span> <span class="var">numpy</span> <span class="kw">as</span> <span class="var">np</span>
+<span class="kw">import</span> <span class="var">pandas</span> <span class="kw">as</span> <span class="var">pd</span>
+
+<span class="cm"># 3. Faqat kerakli narsalar</span>
+<span class="kw">from</span> <span class="var">math</span> <span class="kw">import</span> <span class="var">sqrt</span>, <span class="var">pi</span>, <span class="var">ceil</span>
+<span class="bi">print</span>(<span class="fn">sqrt</span>(<span class="num">25</span>))  <span class="cm"># 5.0 (math. shart emas)</span>
+
+<span class="cm"># 4. Barchasi (tavsiya etilmaydi)</span>
+<span class="kw">from</span> <span class="var">math</span> <span class="kw">import</span> *
+
+<span class="cm"># 5. O'z modulimizni yaratish</span>
+<span class="cm"># hisob.py fayl yaratamiz:</span>
+<span class="kw">def</span> <span class="fn">qoshish</span>(<span class="var">a</span>, <span class="var">b</span>): <span class="kw">return</span> <span class="var">a</span> + <span class="var">b</span>
+<span class="kw">def</span> <span class="fn">ayirish</span>(<span class="var">a</span>, <span class="var">b</span>): <span class="kw">return</span> <span class="var">a</span> - <span class="var">b</span>
+<span class="cls">PI</span> = <span class="num">3.14159</span>
+
+<span class="cm"># boshqa faylda:</span>
+<span class="kw">from</span> <span class="var">hisob</span> <span class="kw">import</span> <span class="fn">qoshish</span>
+<span class="bi">print</span>(<span class="fn">qoshish</span>(<span class="num">3</span>, <span class="num">4</span>))  <span class="cm"># 7</span></pre></div>
+    </div>
+    <div class="code-block">
+      <div class="code-header"><span>stdlib_eng_foydali.py</span><span class="badge badge-green">Standart</span></div>
+      <div class="code-body"><pre><span class="kw">import</span> <span class="var">random</span>, <span class="var">datetime</span>, <span class="var">os</span>, <span class="var">sys</span>, <span class="var">time</span>
+
+<span class="cm"># ── random ──</span>
+<span class="bi">print</span>(<span class="var">random</span>.randint(<span class="num">1</span>, <span class="num">100</span>))
+<span class="bi">print</span>(<span class="var">random</span>.choice([<span class="str">"a"</span>,<span class="str">"b"</span>,<span class="str">"c"</span>]))
+<span class="var">random</span>.shuffle([<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>])
+<span class="bi">print</span>(<span class="var">random</span>.sample(<span class="bi">range</span>(<span class="num">100</span>), <span class="num">5</span>)) <span class="cm"># 5 ta noyob</span>
+
+<span class="cm"># ── datetime ──</span>
+<span class="var">hozir</span> = <span class="var">datetime</span>.datetime.now()
+<span class="bi">print</span>(<span class="var">hozir</span>.strftime(<span class="str">"%d.%m.%Y %H:%M"</span>))
+<span class="var">bugun</span> = <span class="var">datetime</span>.date.today()
+<span class="var">delta</span> = <span class="var">datetime</span>.timedelta(days=<span class="num">30</span>)
+<span class="bi">print</span>((<span class="var">bugun</span> + <span class="var">delta</span>).strftime(<span class="str">"%d.%m.%Y"</span>))
+
+<span class="cm"># ── os ──</span>
+<span class="bi">print</span>(<span class="var">os</span>.getcwd())          <span class="cm"># joriy yo'l</span>
+<span class="bi">print</span>(<span class="var">os</span>.listdir(<span class="str">"."</span>))     <span class="cm"># fayllar</span>
+<span class="var">os</span>.makedirs(<span class="str">"papka/ichki"</span>, <span class="var">exist_ok</span>=<span class="kw">True</span>)
+
+<span class="cm"># ── sys ──</span>
+<span class="bi">print</span>(<span class="var">sys</span>.version)
+<span class="bi">print</span>(<span class="var">sys</span>.argv)       <span class="cm"># CLI argumentlar</span>
+<span class="bi">print</span>(<span class="var">sys</span>.path)       <span class="cm"># modul qidiruv yo'llari</span>
+
+<span class="cm"># ── itertools ──</span>
+<span class="kw">from</span> <span class="var">itertools</span> <span class="kw">import</span> <span class="fn">combinations</span>, <span class="fn">permutations</span>, <span class="fn">product</span>
+<span class="bi">print</span>(<span class="bi">list</span>(<span class="fn">combinations</span>([<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>], <span class="num">2</span>)))   <span class="cm"># [(1,2),(1,3),(2,3)]</span>
+<span class="bi">print</span>(<span class="bi">list</span>(<span class="fn">permutations</span>([<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>], <span class="num">2</span>)))   <span class="cm"># barcha tartiblar</span></pre></div>
+    </div>
+  </div>
+
+  <div class="sub-title teal">🌟 Mashhur tashqi kutubxonalar</div>
+  <div class="grid grid-4">
+    <div class="card card-accent"><h3>requests</h3><p>HTTP so'rovlar va API</p><code style="font-size:11px">pip install requests</code></div>
+    <div class="card card-green"><h3>pandas</h3><p>Ma'lumotlar tahlili</p><code style="font-size:11px">pip install pandas</code></div>
+    <div class="card card-yellow"><h3>numpy</h3><p>Raqamli hisob-kitob</p><code style="font-size:11px">pip install numpy</code></div>
+    <div class="card card-orange"><h3>flask</h3><p>Yengil web framework</p><code style="font-size:11px">pip install flask</code></div>
+    <div class="card card-purple"><h3>aiogram</h3><p>Telegram bot</p><code style="font-size:11px">pip install aiogram</code></div>
+    <div class="card card-red"><h3>matplotlib</h3><p>Grafiklar</p><code style="font-size:11px">pip install matplotlib</code></div>
+    <div class="card card-teal"><h3>SQLAlchemy</h3><p>Ma'lumotlar bazasi</p><code style="font-size:11px">pip install sqlalchemy</code></div>
+    <div class="card card-accent"><h3>FastAPI</h3><p>Zamonaviy API</p><code style="font-size:11px">pip install fastapi</code></div>
+  </div>
+
+  <div class="sub-title teal">🏠 Virtual muhit (venv)</div>
+  <div class="code-block">
+    <div class="code-header"><span>terminal</span><span class="badge badge-yellow">Majburiy odat!</span></div>
+    <div class="code-body"><pre><span class="cm"># Virtual muhit yaratish</span>
+python -m venv venv
+
+<span class="cm"># Faollashtirish</span>
+venv\Scripts\activate        <span class="cm"># Windows</span>
+source venv/bin/activate     <span class="cm"># macOS/Linux</span>
+
+<span class="cm"># Paket o'rnatish</span>
+pip install requests pandas flask
+
+<span class="cm"># O'rnatilgan paketlarni saqlash</span>
+pip freeze > requirements.txt
+
+<span class="cm"># Boshqa kompyuterda o'rnatish</span>
+pip install -r requirements.txt
+
+<span class="cm"># O'chirish</span>
+deactivate</pre></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     16  ILG'OR MAVZULAR
+══════════════════════════════════════ -->
+<div class="section-sep" id="advanced"></div>
+<div class="section-header purple">
+  <div class="sh-icon">🚀</div>
+  <div class="sh-text">
+    <h2>Ilg'or mavzular</h2>
+    <p>Decoratorlar, generatorlar, async/await, type hints, Telegram bot</p>
+  </div>
+  <div class="sh-num">16</div>
+</div>
+<div class="container">
+  <div class="grid grid-2">
+    <div class="code-block">
+      <div class="code-header"><span>decorators.py</span><span class="badge badge-purple">Decorator</span></div>
+      <div class="code-body"><pre><span class="kw">import</span> <span class="var">time</span>, <span class="var">functools</span>
+
+<span class="cm"># Taymer decorator</span>
+<span class="kw">def</span> <span class="fn">taymer</span>(<span class="var">func</span>):
+    <span class="kw">@</span><span class="var">functools</span>.wraps(<span class="var">func</span>)
+    <span class="kw">def</span> <span class="fn">wrapper</span>(*<span class="var">args</span>, **<span class="var">kwargs</span>):
+        <span class="var">t0</span> = <span class="var">time</span>.perf_counter()
+        <span class="var">natija</span> = <span class="fn">func</span>(*<span class="var">args</span>, **<span class="var">kwargs</span>)
+        <span class="bi">print</span>(<span class="str">f"⏱ {<span class="var">func</span>.__name__}: {<span class="var">time</span>.perf_counter()-<span class="var">t0</span>:.4f}s"</span>)
+        <span class="kw">return</span> <span class="var">natija</span>
+    <span class="kw">return</span> <span class="fn">wrapper</span>
+
+<span class="cm"># Retry decorator — xato bo'lsa qayta urinish</span>
+<span class="kw">def</span> <span class="fn">retry</span>(<span class="var">urinish</span>=<span class="num">3</span>):
+    <span class="kw">def</span> <span class="fn">decorator</span>(<span class="var">func</span>):
+        <span class="kw">@</span><span class="var">functools</span>.wraps(<span class="var">func</span>)
+        <span class="kw">def</span> <span class="fn">wrapper</span>(*<span class="var">a</span>, **<span class="var">k</span>):
+            <span class="kw">for</span> <span class="var">i</span> <span class="kw">in</span> <span class="bi">range</span>(<span class="var">urinish</span>):
+                <span class="kw">try</span>:
+                    <span class="kw">return</span> <span class="fn">func</span>(*<span class="var">a</span>, **<span class="var">k</span>)
+                <span class="kw">except</span> <span class="cls">Exception</span> <span class="kw">as</span> <span class="var">e</span>:
+                    <span class="bi">print</span>(<span class="str">f"Urinish {<span class="var">i</span>+<span class="num">1</span>}: {<span class="var">e</span>}"</span>)
+                    <span class="kw">if</span> <span class="var">i</span> <span class="op">==</span> <span class="var">urinish</span> <span class="op">-</span> <span class="num">1</span>:
+                        <span class="kw">raise</span>
+        <span class="kw">return</span> <span class="fn">wrapper</span>
+    <span class="kw">return</span> <span class="fn">decorator</span>
+
+<span class="kw">@</span><span class="fn">taymer</span>
+<span class="kw">@</span><span class="fn">retry</span>(<span class="num">3</span>)
+<span class="kw">def</span> <span class="fn">api_sorovi</span>(<span class="var">url</span>):
+    <span class="cm"># API so'rov simulyatsiya</span>
+    <span class="kw">pass</span></pre></div>
+    </div>
+    <div class="code-block">
+      <div class="code-header"><span>generators.py</span><span class="badge badge-blue">Generator</span></div>
+      <div class="code-body"><pre><span class="cm"># Generator — xotirani tejaydi</span>
+<span class="kw">def</span> <span class="fn">fibonacci</span>():
+    <span class="var">a</span>, <span class="var">b</span> = <span class="num">0</span>, <span class="num">1</span>
+    <span class="kw">while</span> <span class="kw">True</span>:
+        <span class="kw">yield</span> <span class="var">a</span>
+        <span class="var">a</span>, <span class="var">b</span> = <span class="var">b</span>, <span class="var">a</span> + <span class="var">b</span>
+
+<span class="var">gen</span> = <span class="fn">fibonacci</span>()
+<span class="kw">for</span> <span class="var">_</span> <span class="kw">in</span> <span class="bi">range</span>(<span class="num">10</span>):
+    <span class="bi">print</span>(<span class="bi">next</span>(<span class="var">gen</span>), <span class="var">end</span>=<span class="str">" "</span>)
+
+<span class="cm"># Katta fayl satrlarini generatorla</span>
+<span class="kw">def</span> <span class="fn">katta_fayl_qatorlari</span>(<span class="var">fayl_nomi</span>):
+    <span class="kw">with</span> <span class="bi">open</span>(<span class="var">fayl_nomi</span>) <span class="kw">as</span> <span class="var">f</span>:
+        <span class="kw">for</span> <span class="var">q</span> <span class="kw">in</span> <span class="var">f</span>:
+            <span class="kw">yield</span> <span class="var">q</span>.strip()
+<span class="cm"># Xotiraga butun fayl yuklanmaydi!</span>
+
+<span class="cm"># Generator expression</span>
+<span class="var">gen</span> = (<span class="var">x</span><span class="op">**</span><span class="num">2</span> <span class="kw">for</span> <span class="var">x</span> <span class="kw">in</span> <span class="bi">range</span>(<span class="num">10</span>))
+
+<span class="cm"># send() — generator bilan muloqot</span>
+<span class="kw">def</span> <span class="fn">akkumulyator</span>():
+    <span class="var">jami</span> = <span class="num">0</span>
+    <span class="kw">while</span> <span class="kw">True</span>:
+        <span class="var">n</span> = <span class="kw">yield</span> <span class="var">jami</span>
+        <span class="kw">if</span> <span class="var">n</span> <span class="kw">is</span> <span class="kw">not</span> <span class="kw">None</span>:
+            <span class="var">jami</span> += <span class="var">n</span>
+
+<span class="var">a</span> = <span class="fn">akkumulyator</span>()
+<span class="bi">next</span>(<span class="var">a</span>)
+<span class="bi">print</span>(<span class="var">a</span>.send(<span class="num">10</span>))  <span class="cm"># 10</span>
+<span class="bi">print</span>(<span class="var">a</span>.send(<span class="num">5</span>))   <span class="cm"># 15</span></pre></div>
+    </div>
+  </div>
+
+  <div class="sub-title purple">📐 Type Hints (Python 3.9+)</div>
+  <div class="code-block">
+    <div class="code-body"><pre><span class="kw">from</span> <span class="var">typing</span> <span class="kw">import</span> <span class="cls">Optional</span>, <span class="cls">Union</span>, <span class="cls">List</span>, <span class="cls">Dict</span>, <span class="cls">Callable</span>
+
+<span class="cm"># Funksiya tur belgilari</span>
+<span class="kw">def</span> <span class="fn">salom_ayt</span>(<span class="var">ism</span>: <span class="bi">str</span>, <span class="var">yosh</span>: <span class="bi">int</span>) -> <span class="bi">str</span>:
+    <span class="kw">return</span> <span class="str">f"Salom {<span class="var">ism</span>}, {<span class="var">yosh</span>} yoshdasiz!"</span>
+
+<span class="cm"># Optional — None yoki tur</span>
+<span class="kw">def</span> <span class="fn">qidir</span>(<span class="var">ism</span>: <span class="bi">str</span>) -> <span class="cls">Optional</span>[<span class="bi">int</span>]:
+    <span class="kw">return</span> <span class="kw">None</span>  <span class="cm"># yoki int</span>
+
+<span class="cm"># Union — bir necha tur</span>
+<span class="kw">def</span> <span class="fn">jarayonla</span>(<span class="var">n</span>: <span class="cls">Union</span>[<span class="bi">int</span>, <span class="bi">float</span>]) -> <span class="bi">float</span>:
+    <span class="kw">return</span> <span class="bi">float</span>(<span class="var">n</span>)
+
+<span class="cm"># Python 3.10+ qisqaroq yozuv</span>
+<span class="kw">def</span> <span class="fn">jarayonla2</span>(<span class="var">n</span>: <span class="bi">int</span> | <span class="bi">float</span>) -> <span class="bi">float</span>:
+    <span class="kw">return</span> <span class="bi">float</span>(<span class="var">n</span>)
+
+<span class="cm"># Dataclass</span>
+<span class="kw">from</span> <span class="var">dataclasses</span> <span class="kw">import</span> <span class="fn">dataclass</span>, <span class="var">field</span>
+
+<span class="kw">@</span><span class="fn">dataclass</span>
+<span class="kw">class</span> <span class="cls">Talaba</span>:
+    <span class="var">ism</span>: <span class="bi">str</span>
+    <span class="var">yosh</span>: <span class="bi">int</span>
+    <span class="var">fanlar</span>: <span class="cls">List</span>[<span class="bi">str</span>] = <span class="fn">field</span>(<span class="var">default_factory</span>=<span class="bi">list</span>)
+    <span class="var">gpa</span>: <span class="bi">float</span> = <span class="num">0.0</span>
+
+<span class="var">t</span> = <span class="cls">Talaba</span>(<span class="str">"Ali"</span>, <span class="num">22</span>, [<span class="str">"Math"</span>, <span class="str">"CS"</span>], <span class="num">3.8</span>)
+<span class="bi">print</span>(<span class="var">t</span>)  <span class="cm"># Talaba(ism='Ali', yosh=22, ...)</span></pre></div>
+  </div>
+
+  <div class="sub-title purple">⚡ Async/Await — Asinxron dasturlash</div>
+  <div class="code-block">
+    <div class="code-body"><pre><span class="kw">import</span> <span class="var">asyncio</span>
+
+<span class="kw">async def</span> <span class="fn">ma'lumot_ol</span>(<span class="var">id</span>: <span class="bi">int</span>) -> <span class="bi">dict</span>:
+    <span class="kw">await</span> <span class="var">asyncio</span>.sleep(<span class="num">1</span>)  <span class="cm"># API so'rovini simulyatsiya</span>
+    <span class="kw">return</span> {<span class="str">"id"</span>: <span class="var">id</span>, <span class="str">"ism"</span>: <span class="str">f"Foydalanuvchi {<span class="var">id</span>}"</span>}
+
+<span class="kw">async def</span> <span class="fn">asosiy</span>():
+    <span class="cm"># Ketma-ket (3 soniya)</span>
+    <span class="kw">for</span> <span class="var">i</span> <span class="kw">in</span> [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]:
+        <span class="var">natija</span> = <span class="kw">await</span> <span class="fn">ma'lumot_ol</span>(<span class="var">i</span>)
+        <span class="bi">print</span>(<span class="var">natija</span>)
+
+    <span class="cm"># Parallel (1 soniya!) — gather bilan</span>
+    <span class="var">natijalar</span> = <span class="kw">await</span> <span class="var">asyncio</span>.gather(
+        <span class="fn">ma'lumot_ol</span>(<span class="num">1</span>),
+        <span class="fn">ma'lumot_ol</span>(<span class="num">2</span>),
+        <span class="fn">ma'lumot_ol</span>(<span class="num">3</span>)
+    )
+    <span class="kw">for</span> <span class="var">n</span> <span class="kw">in</span> <span class="var">natijalar</span>:
+        <span class="bi">print</span>(<span class="var">n</span>)
+
+<span class="var">asyncio</span>.run(<span class="fn">asosiy</span>())</pre></div>
+  </div>
+
+  <div class="sub-title purple">🤖 Telegram Bot — To'liq misol</div>
+  <div class="code-block">
+    <div class="code-header"><span>bot.py</span><span class="badge badge-green">aiogram 3.x</span></div>
+    <div class="code-body"><pre><span class="kw">from</span> <span class="var">aiogram</span> <span class="kw">import</span> <span class="cls">Bot</span>, <span class="cls">Dispatcher</span>, <span class="cls">F</span>
+<span class="kw">from</span> <span class="var">aiogram.types</span> <span class="kw">import</span> <span class="cls">Message</span>, <span class="cls">InlineKeyboardMarkup</span>, <span class="cls">InlineKeyboardButton</span>
+<span class="kw">from</span> <span class="var">aiogram.filters</span> <span class="kw">import</span> <span class="cls">CommandStart</span>, <span class="cls">Command</span>
+<span class="kw">from</span> <span class="var">aiogram.fsm.context</span> <span class="kw">import</span> <span class="cls">FSMContext</span>
+<span class="kw">from</span> <span class="var">aiogram.fsm.state</span> <span class="kw">import</span> <span class="cls">State</span>, <span class="cls">StatesGroup</span>
+<span class="kw">import</span> <span class="var">asyncio</span>
+
+<span class="cm"># FSM — holatlar mashina</span>
+<span class="kw">class</span> <span class="cls">Ro'yxat</span>(<span class="cls">StatesGroup</span>):
+    <span class="var">ism</span> = <span class="cls">State</span>()
+    <span class="var">yosh</span> = <span class="cls">State</span>()
+
+<span class="var">bot</span> = <span class="cls">Bot</span>(<span class="var">token</span>=<span class="str">"BOT_TOKEN"</span>)
+<span class="var">dp</span> = <span class="cls">Dispatcher</span>()
+
+<span class="kw">@</span><span class="var">dp</span>.message(<span class="cls">CommandStart</span>())
+<span class="kw">async def</span> <span class="fn">start</span>(<span class="var">msg</span>: <span class="cls">Message</span>):
+    <span class="var">tugmalar</span> = <span class="cls">InlineKeyboardMarkup</span>(<span class="var">inline_keyboard</span>=[[
+        <span class="cls">InlineKeyboardButton</span>(<span class="var">text</span>=<span class="str">"Ro'yxatdan o'tish"</span>, <span class="var">callback_data</span>=<span class="str">"royxat"</span>),
+        <span class="cls">InlineKeyboardButton</span>(<span class="var">text</span>=<span class="str">"Yordam"</span>, <span class="var">callback_data</span>=<span class="str">"yordam"</span>),
+    ]])
+    <span class="kw">await</span> <span class="var">msg</span>.answer(
+        <span class="str">f"Salom, {<span class="var">msg</span>.from_user.first_name}! 👋"</span>,
+        <span class="var">reply_markup</span>=<span class="var">tugmalar</span>
+    )
+
+<span class="kw">@</span><span class="var">dp</span>.message(<span class="cls">Command</span>(<span class="str">"hisob"</span>))
+<span class="kw">async def</span> <span class="fn">kalkulyator</span>(<span class="var">msg</span>: <span class="cls">Message</span>):
+    <span class="kw">try</span>:
+        <span class="var">_, <span class="var">ifoda</span></span> = <span class="var">msg</span>.text.split(<span class="var">maxsplit</span>=<span class="num">1</span>)
+        <span class="var">natija</span> = <span class="bi">eval</span>(<span class="var">ifoda</span>)  <span class="cm"># Ishlab chiqarishda ishlatmang!</span>
+        <span class="kw">await</span> <span class="var">msg</span>.answer(<span class="str">f"📊 {<span class="var">ifoda</span>} = <strong>{<span class="var">natija</span>}</strong>"</span>)
+    <span class="kw">except</span>:
+        <span class="kw">await</span> <span class="var">msg</span>.answer(<span class="str">"Masalan: /hisob 5 + 3 * 2"</span>)
+
+<span class="kw">@</span><span class="var">dp</span>.message(<span class="cls">F</span>.text)
+<span class="kw">async def</span> <span class="fn">echo</span>(<span class="var">msg</span>: <span class="cls">Message</span>):
+    <span class="kw">await</span> <span class="var">msg</span>.answer(<span class="str">f"🔄 Siz yozdingiz:\n<i>{<span class="var">msg</span>.text}</i>"</span>)
+
+<span class="kw">async def</span> <span class="fn">main</span>():
+    <span class="kw">await</span> <span class="var">dp</span>.start_polling(<span class="var">bot</span>)
+
+<span class="kw">if</span> <span class="var">__name__</span> == <span class="str">"__main__"</span>:
+    <span class="var">asyncio</span>.run(<span class="fn">main</span>())</pre></div>
+  </div>
+
+  <div class="sub-title purple">🗺️ O'rganish yo'l xaritasi</div>
+  <div class="grid grid-4">
+    <div class="card card-accent">
+      <h3>📚 1-oy</h3>
+      <p>Asoslar, o'zgaruvchilar, shartlar, sikllar, funksiyalar</p>
+    </div>
+    <div class="card card-green">
+      <h3>🏗️ 2-oy</h3>
+      <p>OOP, fayllar, modullar, xatolar, standart kutubxona</p>
+    </div>
+    <div class="card card-yellow">
+      <h3>🌐 3-oy</h3>
+      <p>Flask/FastAPI, ma'lumotlar bazasi, Telegram bot</p>
+    </div>
+    <div class="card card-orange">
+      <h3>🚀 4-oy+</h3>
+      <p>Async, Docker, deployment, portfolio loyiha</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ FOOTER ══════════ -->
+<footer>
+  <p>🐍 <strong>Python O'rganish Markazi</strong> — O'zbekiston dasturchilari uchun</p>
+  <p style="margin-top:0.5rem;font-size:12px">Barcha misollar Python 3.10+ uchun • Savollar: Telegram @python_uzbekistan</p>
+</footer>
+
+<script>
+  // Active nav link on scroll
+  const sections = document.querySelectorAll('[id]');
+  const navLinks = document.querySelectorAll('nav a');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        navLinks.forEach(a => a.classList.remove('active'));
+        const active = document.querySelector(`nav a[href="#${e.target.id}"]`);
+        if (active) {
+          active.classList.add('active');
+          active.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        }
+      }
+    });
+  }, { rootMargin: '-56px 0px -70% 0px' });
+
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
